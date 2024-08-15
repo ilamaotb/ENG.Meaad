@@ -1,0 +1,3931 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map with Location Type Dropdown</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
+    <script src="https://js.arcgis.com/4.30/"></script>
+    <style>
+        #viewDiv {
+            height: 100vh;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #switchButton {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            z-index: 99;
+            padding: 10px;
+            background-color: rgba(139, 135, 135, 0.463);
+            border: 1px solid #1c04f9;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #dropdownDiv {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 99;
+            padding: 10px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #select {
+            padding: 5px;
+            font-size: 14px;
+            width: 180px;
+        }
+
+        #displayArea {
+            position: absolute;
+            top: 60px;
+            right: 10px;
+            z-index: 99;
+            padding: 10px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            max-width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="displayArea"></div>
+    <button id="switchButton">Switch Basemap</button>
+    <div id="viewDiv"></div>
+
+    <div id="dropdownDiv">
+        <label for="amanaDropdown">Select Amana:</label>
+        <select id="amanaDropdown">
+            <!-- Amana options will be added here by JavaScript -->
+        </select>
+
+        <br><br> <!-- Line breaks to separate the two dropdowns -->
+
+        <label for="municipalityDropdown">Select Municipality:</label>
+        <select id="municipalityDropdown">
+            <!-- Municipality options will be added here by JavaScript -->
+        </select>
+        <br><br> <!-- Line breaks to separate the dropdowns -->
+
+        <label for="regionDropdown">Select Region:</label>
+        <select id="regionDropdown">
+            <!-- Region options will be added here by JavaScript -->
+        </select>
+        <br><br>
+
+        <label for="streetDropdown">Select Street:</label>
+        <select id="streetDropdown">
+            <!-- Street options will be added here by JavaScript -->
+        </select>
+
+
+    </div>
+
+    <script>
+
+        const amanas = {
+            features: [
+                {
+                    "attributes": {
+                        "OBJECTID": 2679,
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "018001",
+                        "REGIONCODE": "006",
+                        "AMANAARNAME": "أمانة محافظة حفر الباطن",
+                        "AMANAENAME": "Hafr Al Batin Municipality",
+                        "MAZARAMANACODE": "C0196183-0748-43A8-B910-DAE34EF30A33",
+                        "ORIGINALLAYERNAME": "408",
+                        "SHAPE.AREA": 4.2876790502014197,
+                        "SHAPE.LEN": 10.4020871858073,
+                        "GLOBALID": "{C3106745-4F3D-427A-B06C-F37A493EE30A}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732789000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732789000,
+                        "AMANA": "أمانة محافظة حفر الباطن"
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 2680,
+                        "REGION": "منطقة المدينة المنورة",
+                        "AMANACODE": "003001",
+                        "REGIONCODE": "003",
+                        "AMANAARNAME": "أمانة منطقة المدينة المنورة",
+                        "AMANAENAME": "Madinah Municipality",
+                        "MAZARAMANACODE": "48f81bf1-5c74-4ffc-aec2-b18b341de73f",
+                        "ORIGINALLAYERNAME": "213",
+                        "SHAPE.AREA": 12.878321876257401,
+                        "SHAPE.LEN": 22.2901385599334,
+                        "GLOBALID": "{CF1775B4-7C0D-4204-A700-5C5FF46D6416}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732789000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732789000,
+                        "AMANA": "أمانة منطقة المدينة المنورة"
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 2681,
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "017001",
+                        "REGIONCODE": "006",
+                        "AMANAARNAME": "أمانة محافظة الاحساء",
+                        "AMANAENAME": "Alahsa Municipality",
+                        "MAZARAMANACODE": "fbe6dd4a-8dd3-4b38-a652-1d16c4944b51",
+                        "ORIGINALLAYERNAME": "193",
+                        "SHAPE.AREA": 35.089582512953903,
+                        "SHAPE.LEN": 32.900055227335699,
+                        "GLOBALID": "{93F9C907-ABCE-4A88-8B53-7E1D4EB71057}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732789000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732789000,
+                        "AMANA": "أمانة محافظة الاحساء"
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 2682,
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "005001",
+                        "REGIONCODE": "002",
+                        "AMANAARNAME": "أمانة محافظة جدة",
+                        "AMANAENAME": "Jeddah Municipality",
+                        "MAZARAMANACODE": "957A3362-FDF1-4103-AAE2-2FB6366D2DB5",
+                        "ORIGINALLAYERNAME": "21",
+                        "SHAPE.AREA": 3.2421614644705397,
+                        "SHAPE.LEN": 26.732826969159699,
+                        "GLOBALID": "{16C026ED-97CD-4EDD-AF95-0E848DB6AFA7}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732789000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732789000,
+                        "AMANA": "أمانة محافظة جدة"
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 2683,
+                        "REGION": "منطقة حائل",
+                        "AMANACODE": "012001",
+                        "REGIONCODE": "012",
+                        "AMANAARNAME": "أمانة منطقة حائل",
+                        "AMANAENAME": "Hail Municipality",
+                        "MAZARAMANACODE": "f5bbf80f-1b10-497c-a69c-5c6337ecdd57",
+                        "ORIGINALLAYERNAME": "37",
+                        "SHAPE.AREA": 11.6894461530639,
+                        "SHAPE.LEN": 15.1145815275442,
+                        "GLOBALID": "{A57F7A8A-AD49-403E-BF38-674444A5E7A2}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732789000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732789000,
+                        "AMANA": "أمانة منطقة حائل"
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 2667,
+                        "REGION": "منطقة نجران",
+                        "AMANACODE": "015001",
+                        "REGIONCODE": "015",
+                        "AMANAARNAME": "أمانة منطقة نجران",
+                        "AMANAENAME": "Najran Municipality",
+                        "MAZARAMANACODE": "209F48C5-E258-4FE1-94B6-E2E0C749D9E6",
+                        "ORIGINALLAYERNAME": "9",
+                        "SHAPE.AREA": 10.9086806361589,
+                        "SHAPE.LEN": 19.863932766855097,
+                        "GLOBALID": "{BDDF7867-F246-46E2-8FB9-E1A18DCECCDB}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732789000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732789000,
+                        "AMANA": "أمانة منطقة نجران"
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 2668,
+                        "REGION": "منطقة الحدود الشمالية",
+                        "AMANACODE": "013001",
+                        "REGIONCODE": "013",
+                        "AMANAARNAME": "أمانة منطقة الحدود الشمالية",
+                        "AMANAENAME": "Northern Borders Municipality",
+                        "MAZARAMANACODE": "4cfdd701-45b1-4a25-99b8-99ed0ed4588c",
+                        "ORIGINALLAYERNAME": "1",
+                        "SHAPE.AREA": 9.10081963715478,
+                        "SHAPE.LEN": 22.236160448080199,
+                        "GLOBALID": "{75298DD8-BAB2-4E23-A40A-2A2A7826B273}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732789000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732789000,
+                        "AMANA": "أمانة منطقة الحدود الشمالية"
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 2669,
+                        "REGION": "منطقة القصيم",
+                        "AMANACODE": "008001",
+                        "REGIONCODE": "008",
+                        "AMANAARNAME": "أمانة منطقة القصيم",
+                        "AMANAENAME": "Qassim Municipality",
+                        "MAZARAMANACODE": "ed748dc1-4713-4b41-b27a-adab264c88c1",
+                        "ORIGINALLAYERNAME": "66",
+                        "SHAPE.AREA": 6.3126876161723793,
+                        "SHAPE.LEN": 14.331857208256499,
+                        "GLOBALID": "{2BB37BB2-F5F3-4074-B490-A1ACF8220478}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732789000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732789000,
+                        "AMANA": "أمانة منطقة القصيم"
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 2670,
+                        "REGION": "منطقة عسير",
+                        "AMANACODE": "007001",
+                        "REGIONCODE": "007",
+                        "AMANAARNAME": "أمانة منطقة عسير",
+                        "AMANAENAME": "Asir Municipality",
+                        "MAZARAMANACODE": "066BD4BB-7AF2-40B4-ABD5-788059A5F6F5",
+                        "ORIGINALLAYERNAME": "13",
+                        "SHAPE.AREA": 6.9131410067901697,
+                        "SHAPE.LEN": 14.642797471391001,
+                        "GLOBALID": "{6B3B1992-E1D1-4446-AD81-332B967F3407}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732789000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732789000,
+                        "AMANA": "أمانة منطقة عسير"
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 2671,
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "002001",
+                        "REGIONCODE": "002",
+                        "AMANAARNAME": "أمانة العاصمة المقدسة",
+                        "AMANAENAME": "Holly Makkah Municipality",
+                        "MAZARAMANACODE": "7861fcdd-4c80-410a-8f18-6d28e029dc21",
+                        "ORIGINALLAYERNAME": "178",
+                        "SHAPE.AREA": 1.12215620650384,
+                        "SHAPE.LEN": 7.5798976687147395,
+                        "GLOBALID": "{41965575-E907-4F5F-9517-7BFEF96CBA6F}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732789000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732789000,
+                        "AMANA": "أمانة العاصمة المقدسة"
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 2672,
+                        "REGION": "منطقة الجوف",
+                        "AMANACODE": "010001",
+                        "REGIONCODE": "010",
+                        "AMANAARNAME": "أمانة منطقة الجوف",
+                        "AMANAENAME": "Al Jouf Municipality",
+                        "MAZARAMANACODE": "7E324D33-C281-4830-867E-2C652EC7E029",
+                        "ORIGINALLAYERNAME": "383",
+                        "SHAPE.AREA": 8.0657278193160984,
+                        "SHAPE.LEN": 17.443157401948298,
+                        "GLOBALID": "{A3333F88-2F63-4E7B-9A75-00335A80BC17}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732789000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732789000,
+                        "AMANA": "أمانة منطقة الجوف"
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 2673,
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "016001",
+                        "REGIONCODE": "002",
+                        "AMANAARNAME": "أمانة محافظة الطائف",
+                        "AMANAENAME": "Taif Municipality",
+                        "MAZARAMANACODE": "b65ec706-882f-492b-9eda-2e00b894cb11",
+                        "ORIGINALLAYERNAME": "300",
+                        "SHAPE.AREA": 8.1119204080542495,
+                        "SHAPE.LEN": 15.2437130664108,
+                        "GLOBALID": "{055206C7-7A0A-496A-B656-7C3C1A2E2066}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732789000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1719916612000,
+                        "AMANA": "أمانة محافظة الطائف"
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 2674,
+                        "REGION": "منطقة جازان",
+                        "AMANACODE": "009001",
+                        "REGIONCODE": "009",
+                        "AMANAARNAME": "أمانة منطقة جازان",
+                        "AMANAENAME": "Jazan Municipality",
+                        "MAZARAMANACODE": "6fbf11dc-2620-4f9a-acfc-f9413cc48174",
+                        "ORIGINALLAYERNAME": "20",
+                        "SHAPE.AREA": 1.0850785717689799,
+                        "SHAPE.LEN": 15.661933632969699,
+                        "GLOBALID": "{F59C154D-1A97-4AFA-A334-B9833350E623}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732789000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732789000,
+                        "AMANA": "أمانة منطقة جازان"
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 2675,
+                        "REGION": "منطقة الرياض",
+                        "AMANACODE": "004001",
+                        "REGIONCODE": "004",
+                        "AMANAARNAME": "أمانة منطقة الرياض",
+                        "AMANAENAME": "Alriyadh Municipality",
+                        "MAZARAMANACODE": "C0F04FE0-84D1-47F2-842D-E3261B44DED6",
+                        "ORIGINALLAYERNAME": "321",
+                        "SHAPE.AREA": 33.2052794715825,
+                        "SHAPE.LEN": 29.403163443594003,
+                        "GLOBALID": "{F28616BA-4772-4900-BD28-C2065C14CFDD}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732789000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732789000,
+                        "AMANA": "أمانة منطقة الرياض"
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 2676,
+                        "REGION": "منطقة تبوك",
+                        "AMANACODE": "011001",
+                        "REGIONCODE": "011",
+                        "AMANAARNAME": "أمانة منطقة تبوك",
+                        "AMANAENAME": "Tabuk Municipality",
+                        "MAZARAMANACODE": "ad079e2d-7577-409e-ba03-e7baa1bb41d6",
+                        "ORIGINALLAYERNAME": "88",
+                        "SHAPE.AREA": 12.395271078594199,
+                        "SHAPE.LEN": 30.620245910960296,
+                        "GLOBALID": "{D8A443FB-DAE4-4295-AFDE-2D5381733418}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732789000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732789000,
+                        "AMANA": "أمانة منطقة تبوك"
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 2677,
+                        "REGION": "منطقة الباحة",
+                        "AMANACODE": "014001",
+                        "REGIONCODE": "014",
+                        "AMANAARNAME": "أمانة منطقة الباحة",
+                        "AMANAENAME": "Al Baha Municipality",
+                        "MAZARAMANACODE": "3F6B6C49-AF7E-4B46-9E6C-DDCB15D062E2",
+                        "ORIGINALLAYERNAME": "2",
+                        "SHAPE.AREA": 0.91587774200438599,
+                        "SHAPE.LEN": 5.0794230338700395,
+                        "GLOBALID": "{6F4ABDAB-C647-40FC-A980-3FB7F84E4E9E}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732789000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732789000,
+                        "AMANA": "أمانة منطقة الباحة"
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 2678,
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "006001",
+                        "REGIONCODE": "006",
+                        "AMANAARNAME": "أمانة المنطقة الشرقية",
+                        "AMANAENAME": "Eastern Region Municipality",
+                        "MAZARAMANACODE": "9753822B-F759-4F7A-8D79-B388224DC1EB",
+                        "ORIGINALLAYERNAME": "8",
+                        "SHAPE.AREA": 5.9591521108571195,
+                        "SHAPE.LEN": 23.718919776220002,
+                        "GLOBALID": "{BF9C95E1-D11A-445A-BDE5-980B96CAE454}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732789000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732789000,
+                        "AMANA": "أمانة المنطقة الشرقية"
+                    }
+                }
+            ]
+        }
+        // Add more objects as needed
+
+
+        // Sample data for Municipality
+        const municipalities = {
+            features: [
+                {
+                    "attributes": {
+                        "OBJECTID": 32834,
+                        "REGIONCODE": "008",
+                        "REGION": "منطقة القصيم",
+                        "AMANACODE": "008001",
+                        "AMANA": "أمانة منطقة القصيم",
+                        "MUNICIPALITYCODE": "67",
+                        "MUNICIPALITYARNAME": "بلدية الديرة",
+                        "MUNICIPALITYENAME": "Deira",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "67",
+                        "MAZARAMANACODE": "688f27d6-40a5-434c-85c7-05c99aa795ec",
+                        "GLOBALID": "{15B9CF8D-D9AE-42E0-AEBF-DEF197A7CDC2}",
+                        "MUNICIPALITY": "بلدية الديرة",
+                        "SHAPE.AREA": 0.014767816190199901,
+                        "SHAPE.LEN": 0.52929424695284299,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "008001067",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32835,
+                        "REGIONCODE": "009",
+                        "REGION": "منطقة جازان",
+                        "AMANACODE": "009001",
+                        "AMANA": "أمانة منطقة جازان",
+                        "MUNICIPALITYCODE": "009202",
+                        "MUNICIPALITYARNAME": "فيفا",
+                        "MUNICIPALITYENAME": "Fayfa",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "42",
+                        "MAZARAMANACODE": "69631081-14a1-48c9-a691-0f1d23e9be41",
+                        "GLOBALID": "{E465BE79-F6BA-42A0-93F4-ACDBAAE4E391}",
+                        "MUNICIPALITY": "فيفا",
+                        "SHAPE.AREA": 0.013460744255902601,
+                        "SHAPE.LEN": 0.60991085215969099,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "009202",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32836,
+                        "REGIONCODE": "003",
+                        "REGION": "منطقة المدينة المنورة",
+                        "AMANACODE": "003001",
+                        "AMANA": "أمانة منطقة المدينة المنورة",
+                        "MUNICIPALITYCODE": "1",
+                        "MUNICIPALITYARNAME": "الحرم",
+                        "MUNICIPALITYENAME": "Al Haram",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "214",
+                        "MAZARAMANACODE": "dfdb20f7-da5e-4e78-949c-e8fdfc2dd510",
+                        "GLOBALID": "{1E0292E0-F9EE-48BF-95B6-D5744963BC0E}",
+                        "MUNICIPALITY": "الحرم",
+                        "SHAPE.AREA": 0.00017274325987556101,
+                        "SHAPE.LEN": 0.048255136038964801,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "003001001",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32863,
+                        "REGIONCODE": "004",
+                        "REGION": "منطقة الرياض",
+                        "AMANACODE": "004001",
+                        "AMANA": "أمانة منطقة الرياض",
+                        "MUNICIPALITYCODE": "004709",
+                        "MUNICIPALITYARNAME": "الحصاه",
+                        "MUNICIPALITYENAME": "Al Hassah",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "382",
+                        "MAZARAMANACODE": "1ebf5707-3916-4aa6-8770-fa628b479ee7",
+                        "GLOBALID": "{7FFCB64C-C695-4043-832C-7BE2E387BB4E}",
+                        "MUNICIPALITY": "الحصاه",
+                        "SHAPE.AREA": 0.65154362760857998,
+                        "SHAPE.LEN": 3.6364253250596299,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "004709",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32864,
+                        "REGIONCODE": "013",
+                        "REGION": "منطقة الحدود الشمالية",
+                        "AMANACODE": "013001",
+                        "AMANA": "أمانة منطقة الحدود الشمالية",
+                        "MUNICIPALITYCODE": "013302",
+                        "MUNICIPALITYARNAME": "طريف",
+                        "MUNICIPALITYENAME": "Turaif",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "35",
+                        "MAZARAMANACODE": "1f12e057-229f-4eed-9614-d813972c3eb8",
+                        "GLOBALID": "{E0A1C8B8-A102-494C-BF0F-0E321C426C0F}",
+                        "MUNICIPALITY": "طريف",
+                        "SHAPE.AREA": 2.0898735453442199,
+                        "SHAPE.LEN": 7.6231274468747392,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "013302",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32868,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "016001",
+                        "AMANA": "أمانة محافظة الطائف",
+                        "MUNICIPALITYCODE": "3",
+                        "MUNICIPALITYARNAME": "بلدية جنوب الطائف",
+                        "MUNICIPALITYENAME": "South Taif",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "311",
+                        "MAZARAMANACODE": "6635fe1f-5dc2-4d2d-afa7-0617d524ae3b",
+                        "GLOBALID": "{D270198D-A0C2-4326-93CF-D8A563A827E3}",
+                        "MUNICIPALITY": "بلدية جنوب الطائف",
+                        "SHAPE.AREA": 0.18546274309330402,
+                        "SHAPE.LEN": 2.4965346428058699,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "016001003",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32869,
+                        "REGIONCODE": "003",
+                        "REGION": "منطقة المدينة المنورة",
+                        "AMANACODE": "003001",
+                        "AMANA": "أمانة منطقة المدينة المنورة",
+                        "MUNICIPALITYCODE": "003707",
+                        "MUNICIPALITYARNAME": "السويرقية",
+                        "MUNICIPALITYENAME": "Al Soergih",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "455",
+                        "MAZARAMANACODE": "7d8a552b-2861-4d78-b157-35f00a6fda7d",
+                        "GLOBALID": "{54BA3FE6-2068-40DE-88E3-8B95D8E462E1}",
+                        "MUNICIPALITY": "السويرقية",
+                        "SHAPE.AREA": 0.76263544907241609,
+                        "SHAPE.LEN": 4.5749175414578103,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "003707",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32870,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "005001",
+                        "AMANA": "أمانة محافظة جدة",
+                        "MUNICIPALITYCODE": "005704",
+                        "MUNICIPALITYARNAME": "المظيلف",
+                        "MUNICIPALITYENAME": "Al Mazhaf",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "103",
+                        "MAZARAMANACODE": "5655baaa-1601-402f-8aa7-baf499a38c8e",
+                        "GLOBALID": "{A9DF8EEA-55B1-4EA6-86B4-C5FA801B4AF2}",
+                        "MUNICIPALITY": "المظيلف",
+                        "SHAPE.AREA": 0.156106956403812,
+                        "SHAPE.LEN": 2.32145750248712,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "005704",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32871,
+                        "REGIONCODE": "014",
+                        "REGION": "منطقة الباحة",
+                        "AMANACODE": "014001",
+                        "AMANA": "أمانة منطقة الباحة",
+                        "MUNICIPALITYCODE": "014704",
+                        "MUNICIPALITYARNAME": "غامد الزناد",
+                        "MUNICIPALITYENAME": "Ghamid Alzinad",
+                        "GOVERNMENT": "غامد الزناد",
+                        "GOVERNMENTCODE": "37",
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "147",
+                        "MAZARAMANACODE": "dd23da08-7734-4525-b985-bb75b3f9816c",
+                        "GLOBALID": "{12480EDC-DFAF-4194-87BA-D1DE3061E0B2}",
+                        "MUNICIPALITY": "غامد الزناد",
+                        "SHAPE.AREA": 0.050546342881423199,
+                        "SHAPE.LEN": 1.38461938043834,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "014704",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32872,
+                        "REGIONCODE": "008",
+                        "REGION": "منطقة القصيم",
+                        "AMANACODE": "008001",
+                        "AMANA": "أمانة منطقة القصيم",
+                        "MUNICIPALITYCODE": "008709",
+                        "MUNICIPALITYARNAME": "القصيباء",
+                        "MUNICIPALITYENAME": "Qusaiba",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "127",
+                        "MAZARAMANACODE": "d622bbf3-3f65-4676-a9c5-2ddea21344b6",
+                        "GLOBALID": "{BFE89F64-85F9-4E70-B608-E1A613EE5AA6}",
+                        "MUNICIPALITY": "القصيباء",
+                        "SHAPE.AREA": 0.154979891807284,
+                        "SHAPE.LEN": 2.5146555711211298,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "008709",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32873,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "016001",
+                        "AMANA": "أمانة محافظة الطائف",
+                        "MUNICIPALITYCODE": "016303",
+                        "MUNICIPALITYARNAME": "رنية",
+                        "MUNICIPALITYENAME": "Ranyah",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "309",
+                        "MAZARAMANACODE": "1c395c00-1b90-466f-b1e2-41a936bd1100",
+                        "GLOBALID": "{18C9CA33-3A68-4481-B27E-A6A61D5160E8}",
+                        "MUNICIPALITY": "رنية",
+                        "SHAPE.AREA": 1.9005102871530899,
+                        "SHAPE.LEN": 6.5687801197946998,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "016303",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32874,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "002001",
+                        "AMANA": "أمانة العاصمة المقدسة",
+                        "MUNICIPALITYCODE": "16",
+                        "MUNICIPALITYARNAME": "الشعيبة",
+                        "MUNICIPALITYENAME": null,
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "645",
+                        "MAZARAMANACODE": "62fe6e02-5f45-45a8-a498-eefdabf3bed7",
+                        "GLOBALID": "{F3B30B23-DC96-4022-8CEE-9C9208511A9B}",
+                        "MUNICIPALITY": "الشعيبة",
+                        "SHAPE.AREA": 0.29028094272716698,
+                        "SHAPE.LEN": 2.9173798134859199,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "002001016",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32875,
+                        "REGIONCODE": "003",
+                        "REGION": "منطقة المدينة المنورة",
+                        "AMANACODE": "003001",
+                        "AMANA": "أمانة منطقة المدينة المنورة",
+                        "MUNICIPALITYCODE": "003302",
+                        "MUNICIPALITYARNAME": "خيبر",
+                        "MUNICIPALITYENAME": "Khaybar",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "465",
+                        "MAZARAMANACODE": "5263c7ab-4d82-48e1-b75b-ab2d06626b13",
+                        "GLOBALID": "{E49AD39B-C030-49D5-B68B-9386A30B574E}",
+                        "MUNICIPALITY": "خيبر",
+                        "SHAPE.AREA": 0.63244865302851705,
+                        "SHAPE.LEN": 3.6493854721653696,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "003302",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32876,
+                        "REGIONCODE": "006",
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "017001",
+                        "AMANA": "أمانة محافظة الاحساء",
+                        "MUNICIPALITYCODE": "9",
+                        "MUNICIPALITYARNAME": "العقير",
+                        "MUNICIPALITYENAME": "Al Aqeer",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "399",
+                        "MAZARAMANACODE": "da0d4b9a-6844-4b64-b518-d7cbd2d7b470",
+                        "GLOBALID": "{B7CDA178-33C9-4763-AD67-5FF21DB192E6}",
+                        "MUNICIPALITY": "العقير",
+                        "SHAPE.AREA": 0.0716406740321886,
+                        "SHAPE.LEN": 2.6558883082660198,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "017001009",
+                        "ZONE": "32639",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32877,
+                        "REGIONCODE": "008",
+                        "REGION": "منطقة القصيم",
+                        "AMANACODE": "008001",
+                        "AMANA": "أمانة منطقة القصيم",
+                        "MUNICIPALITYCODE": "008713",
+                        "MUNICIPALITYARNAME": "البطين",
+                        "MUNICIPALITYENAME": "Al Batin",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "128",
+                        "MAZARAMANACODE": "1062fa08-23cc-47e4-a861-93995faef4d8",
+                        "GLOBALID": "{F0B4D407-2203-4197-8485-C118E7AD2D3B}",
+                        "MUNICIPALITY": "البطين",
+                        "SHAPE.AREA": 0.11176076994759999,
+                        "SHAPE.LEN": 1.6367269195162999,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "008713",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32878,
+                        "REGIONCODE": "009",
+                        "REGION": "منطقة جازان",
+                        "AMANACODE": "009001",
+                        "AMANA": "أمانة منطقة جازان",
+                        "MUNICIPALITYCODE": "009704",
+                        "MUNICIPALITYARNAME": "الدرب",
+                        "MUNICIPALITYENAME": "Al Darb",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "53",
+                        "MAZARAMANACODE": "25458918-2710-4fc2-8bf9-424103208537",
+                        "GLOBALID": "{94BA2FD0-0436-4D37-A304-E856B6F72F6F}",
+                        "MUNICIPALITY": "الدرب",
+                        "SHAPE.AREA": 0.11915129091551999,
+                        "SHAPE.LEN": 1.7523200802033898,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "009704",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32879,
+                        "REGIONCODE": "007",
+                        "REGION": "منطقة عسير",
+                        "AMANACODE": "007001",
+                        "AMANA": "أمانة منطقة عسير",
+                        "MUNICIPALITYCODE": "007708",
+                        "MUNICIPALITYARNAME": "البرك",
+                        "MUNICIPALITYENAME": "Al Birk",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "164",
+                        "MAZARAMANACODE": "6baa5a24-5c25-4655-bf45-524fa8bfdbf5",
+                        "GLOBALID": "{F2C6D1F8-493D-4B26-955E-878285609890}",
+                        "MUNICIPALITY": "البرك",
+                        "SHAPE.AREA": 0.130490881221315,
+                        "SHAPE.LEN": 1.9634810552026698,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "007708",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32880,
+                        "REGIONCODE": "013",
+                        "REGION": "منطقة الحدود الشمالية",
+                        "AMANACODE": "013001",
+                        "AMANA": "أمانة منطقة الحدود الشمالية",
+                        "MUNICIPALITYCODE": "013701",
+                        "MUNICIPALITYARNAME": "العويقيلة",
+                        "MUNICIPALITYENAME": "Al Uwayqilah",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "71",
+                        "MAZARAMANACODE": "d6896bbb-3a72-4141-892a-71213d9e8cde",
+                        "GLOBALID": "{53183F77-F434-4E5B-AB90-2AEEF329E2E5}",
+                        "MUNICIPALITY": "العويقيلة",
+                        "SHAPE.AREA": 1.7469058485976299,
+                        "SHAPE.LEN": 6.3635626780930403,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "013701",
+                        "ZONE": "32637-32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32881,
+                        "REGIONCODE": "015",
+                        "REGION": "منطقة نجران",
+                        "AMANACODE": "015001",
+                        "AMANA": "أمانة منطقة نجران",
+                        "MUNICIPALITYCODE": "015702",
+                        "MUNICIPALITYARNAME": "سلطانة",
+                        "MUNICIPALITYENAME": "Sultana",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "235",
+                        "MAZARAMANACODE": "38ef7ae2-e89f-4cc8-bdac-b43df2a8bcee",
+                        "GLOBALID": "{1DE772A1-0DEF-4D62-8FDC-ED01B07AA39B}",
+                        "MUNICIPALITY": "سلطانة",
+                        "SHAPE.AREA": 1.19645784122502,
+                        "SHAPE.LEN": 5.5407140054595194,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "015702",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32882,
+                        "REGIONCODE": "007",
+                        "REGION": "منطقة عسير",
+                        "AMANACODE": "007001",
+                        "AMANA": "أمانة منطقة عسير",
+                        "MUNICIPALITYCODE": "25",
+                        "MUNICIPALITYARNAME": "فرع الأمانة بطبب",
+                        "MUNICIPALITYENAME": "Tabab",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "25",
+                        "MAZARAMANACODE": "54760671-c5b9-4c31-a12e-8e0ba57d3572",
+                        "GLOBALID": "{C2FED16A-CA2A-4C10-A9D4-CC88F26736F9}",
+                        "MUNICIPALITY": "فرع الأمانة بطبب",
+                        "SHAPE.AREA": 0.012071627176173799,
+                        "SHAPE.LEN": 0.57204904375030696,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "007001025",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32865,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "016001",
+                        "AMANA": "أمانة محافظة الطائف",
+                        "MUNICIPALITYCODE": "5",
+                        "MUNICIPALITYARNAME": "بلدية السيل الصغير",
+                        "MUNICIPALITYENAME": "Assayl Assaghir",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "318",
+                        "MAZARAMANACODE": "e3806cc6-6b31-4dbf-bd80-ef33dbd29510",
+                        "GLOBALID": "{4805998C-214D-435A-825C-392B5D7034AA}",
+                        "MUNICIPALITY": "بلدية السيل الصغير",
+                        "SHAPE.AREA": 0.027393505557260601,
+                        "SHAPE.LEN": 0.842613331174352,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "016001005",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32866,
+                        "REGIONCODE": "007",
+                        "REGION": "منطقة عسير",
+                        "AMANACODE": "007001",
+                        "AMANA": "أمانة منطقة عسير",
+                        "MUNICIPALITYCODE": "007712",
+                        "MUNICIPALITYARNAME": "قنا",
+                        "MUNICIPALITYENAME": "Qena",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "175",
+                        "MAZARAMANACODE": "7580850a-4280-4acf-9049-e28a59942108",
+                        "GLOBALID": "{0A5A30A0-F34A-4A03-8000-C59FACDF27E6}",
+                        "MUNICIPALITY": "قنا",
+                        "SHAPE.AREA": 0.037141751974294104,
+                        "SHAPE.LEN": 1.08962615606253,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "007712",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32867,
+                        "REGIONCODE": "011",
+                        "REGION": "منطقة تبوك",
+                        "AMANACODE": "011001",
+                        "AMANA": "أمانة منطقة تبوك",
+                        "MUNICIPALITYCODE": "011707",
+                        "MUNICIPALITYARNAME": "بدا",
+                        "MUNICIPALITYENAME": "Bada",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "208",
+                        "MAZARAMANACODE": "03b4a899-3d7e-4d56-9bd5-4f0f22791435",
+                        "GLOBALID": "{8CA665CB-C3A2-425E-9A14-1795A91EAE91}",
+                        "MUNICIPALITY": "بدا",
+                        "SHAPE.AREA": 0.44034102005317505,
+                        "SHAPE.LEN": 2.9709713378791198,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "011707",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32837,
+                        "REGIONCODE": "011",
+                        "REGION": "منطقة تبوك",
+                        "AMANACODE": "011001",
+                        "AMANA": "أمانة منطقة تبوك",
+                        "MUNICIPALITYCODE": "011201",
+                        "MUNICIPALITYARNAME": "تيماء",
+                        "MUNICIPALITYENAME": "Tayma",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "230",
+                        "MAZARAMANACODE": "aa3ff7ac-927a-492b-98f9-0acc9816f396",
+                        "GLOBALID": "{1EDE8DC3-C80D-4052-8E39-1C97087930A3}",
+                        "MUNICIPALITY": "تيماء",
+                        "SHAPE.AREA": 2.74593803846486,
+                        "SHAPE.LEN": 7.3337737042667195,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "011201",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32838,
+                        "REGIONCODE": "004",
+                        "REGION": "منطقة الرياض",
+                        "AMANACODE": "004001",
+                        "AMANA": "أمانة منطقة الرياض",
+                        "MUNICIPALITYCODE": "004101",
+                        "MUNICIPALITYARNAME": "بلدية محافظة الخرج",
+                        "MUNICIPALITYENAME": "Al Kharj",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "363",
+                        "MAZARAMANACODE": "9f1a287c-4da4-46bf-8ba6-cb7cfb797b18",
+                        "GLOBALID": "{F2901367-91C7-4B56-AB97-1AF1E19ED33D}",
+                        "MUNICIPALITY": "بلدية محافظة الخرج",
+                        "SHAPE.AREA": 1.0187744219780499,
+                        "SHAPE.LEN": 5.9345340158293789,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "004101",
+                        "ZONE": "32638-32639",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32839,
+                        "REGIONCODE": "006",
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "017001",
+                        "AMANA": "أمانة محافظة الاحساء",
+                        "MUNICIPALITYCODE": "017706",
+                        "MUNICIPALITYARNAME": "عريعره",
+                        "MUNICIPALITYENAME": "Urayarah",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "479",
+                        "MAZARAMANACODE": "cdd46aa7-0b6b-4b2f-92e1-987547ff7e84",
+                        "GLOBALID": "{D77325B7-F49B-448E-BF1B-D274633D9DB0}",
+                        "MUNICIPALITY": "عريعره",
+                        "SHAPE.AREA": 0.098837771240281411,
+                        "SHAPE.LEN": 2.07820246977604,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "017706",
+                        "ZONE": "32639",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32840,
+                        "REGIONCODE": "012",
+                        "REGION": "منطقة حائل",
+                        "AMANACODE": "012001",
+                        "AMANA": "أمانة منطقة حائل",
+                        "MUNICIPALITYCODE": "012707",
+                        "MUNICIPALITYARNAME": "أنبوان",
+                        "MUNICIPALITYENAME": "Anbouan",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "227",
+                        "MAZARAMANACODE": "8bd3dbfa-15aa-4420-9c85-3aa33c9ad609",
+                        "GLOBALID": "{AA505893-F3D6-4754-98BB-648B591EF2C6}",
+                        "MUNICIPALITY": "أنبوان",
+                        "SHAPE.AREA": 0.28534069206311502,
+                        "SHAPE.LEN": 3.24590584430993,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "012707",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32841,
+                        "REGIONCODE": "007",
+                        "REGION": "منطقة عسير",
+                        "AMANACODE": "007001",
+                        "AMANA": "أمانة منطقة عسير",
+                        "MUNICIPALITYCODE": "007714",
+                        "MUNICIPALITYARNAME": "الثنية و تبالة",
+                        "MUNICIPALITYENAME": "Aalthaniyat and Tabala",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "173",
+                        "MAZARAMANACODE": "33db3791-ea27-40d6-9174-7b861e90eca0",
+                        "GLOBALID": "{056549C2-2B24-42AD-ADBE-EB793AFE7FFF}",
+                        "MUNICIPALITY": "الثنية و تبالة",
+                        "SHAPE.AREA": 0.32076773948574705,
+                        "SHAPE.LEN": 2.7071103779427097,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "007714",
+                        "ZONE": "32637-32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32842,
+                        "REGIONCODE": "007",
+                        "REGION": "منطقة عسير",
+                        "AMANACODE": "007001",
+                        "AMANA": "أمانة منطقة عسير",
+                        "MUNICIPALITYCODE": "007203",
+                        "MUNICIPALITYARNAME": "النماص",
+                        "MUNICIPALITYENAME": "Al Namas",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "29",
+                        "MAZARAMANACODE": "eb0917f5-ebaf-4520-8ad5-6e3c93aa04e3",
+                        "GLOBALID": "{E1B46F36-3AAB-4979-8C26-04557CC2F734}",
+                        "MUNICIPALITY": "النماص",
+                        "SHAPE.AREA": 0.086562838709173112,
+                        "SHAPE.LEN": 1.9308233207857,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "007203",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32843,
+                        "REGIONCODE": "007",
+                        "REGION": "منطقة عسير",
+                        "AMANACODE": "007001",
+                        "AMANA": "أمانة منطقة عسير",
+                        "MUNICIPALITYCODE": "007303",
+                        "MUNICIPALITYARNAME": "تنومه",
+                        "MUNICIPALITYENAME": "Tanomah",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "89",
+                        "MAZARAMANACODE": "580053a2-8d14-47c4-a1fe-e0ca0f7e5a86",
+                        "GLOBALID": "{3BC5DDD7-D86F-4821-ADA6-52C967518F0F}",
+                        "MUNICIPALITY": "تنومه",
+                        "SHAPE.AREA": 0.097346236972885011,
+                        "SHAPE.LEN": 1.7668239845835898,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "007303",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32844,
+                        "REGIONCODE": "006",
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "006001",
+                        "AMANA": "أمانة المنطقة الشرقية",
+                        "MUNICIPALITYCODE": "7",
+                        "MUNICIPALITYARNAME": "غرب الدمام",
+                        "MUNICIPALITYENAME": "West Dammam",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "7",
+                        "MAZARAMANACODE": "bce978e0-c140-4ff6-b3cf-ff720867a6aa",
+                        "GLOBALID": "{89740A4B-236B-486E-873D-80C224AF86A2}",
+                        "MUNICIPALITY": "غرب الدمام",
+                        "SHAPE.AREA": 0.15872528035751499,
+                        "SHAPE.LEN": 1.73912051951152,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "006001007",
+                        "ZONE": "32639",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32845,
+                        "REGIONCODE": "006",
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "006001",
+                        "AMANA": "أمانة المنطقة الشرقية",
+                        "MUNICIPALITYCODE": "97",
+                        "MUNICIPALITYARNAME": "بلدية صفوي",
+                        "MUNICIPALITYENAME": "Safwa",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "97",
+                        "MAZARAMANACODE": "ebc5c34c-394e-49d3-9249-320001ade42c",
+                        "GLOBALID": "{8E114851-ECD9-441E-8AD5-6CDB116BEB2D}",
+                        "MUNICIPALITY": "بلدية صفوي",
+                        "SHAPE.AREA": 0.029702478382882303,
+                        "SHAPE.LEN": 0.99758539606066499,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "006103097",
+                        "ZONE": "32639",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32846,
+                        "REGIONCODE": "006",
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "006001",
+                        "AMANA": "أمانة المنطقة الشرقية",
+                        "MUNICIPALITYCODE": "006203",
+                        "MUNICIPALITYARNAME": "البقيق",
+                        "MUNICIPALITYENAME": "Abqaiq",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "401",
+                        "MAZARAMANACODE": "bce978e0-c140-4ff6-b3cf-ff320867a6aa",
+                        "GLOBALID": "{8F510BC5-A1CE-420D-A23E-9445C4224FBF}",
+                        "MUNICIPALITY": "البقيق",
+                        "SHAPE.AREA": 0.47980129319685499,
+                        "SHAPE.LEN": 4.0774454277993604,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "006203",
+                        "ZONE": "32639",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32847,
+                        "REGIONCODE": "009",
+                        "REGION": "منطقة جازان",
+                        "AMANACODE": "009001",
+                        "AMANA": "أمانة منطقة جازان",
+                        "MUNICIPALITYCODE": "009714",
+                        "MUNICIPALITYARNAME": "الحقو",
+                        "MUNICIPALITYENAME": "Al Haqu",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "33",
+                        "MAZARAMANACODE": "9f41eb2c-8aaa-4d3e-9f3c-192b6b19eceb",
+                        "GLOBALID": "{7B820651-A19C-4C7E-8747-C9FEDEC18A3C}",
+                        "MUNICIPALITY": "الحقو",
+                        "SHAPE.AREA": 0.017284914741771899,
+                        "SHAPE.LEN": 0.60356464285419698,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "009714",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32848,
+                        "REGIONCODE": "014",
+                        "REGION": "منطقة الباحة",
+                        "AMANACODE": "014001",
+                        "AMANA": "أمانة منطقة الباحة",
+                        "MUNICIPALITYCODE": "014703",
+                        "MUNICIPALITYARNAME": "الحجرة",
+                        "MUNICIPALITYENAME": "Al Hajrah",
+                        "GOVERNMENT": "الحجرة",
+                        "GOVERNMENTCODE": "37",
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "146",
+                        "MAZARAMANACODE": "18183cdd-5c15-4791-8dd0-4936bee633fe",
+                        "GLOBALID": "{13A92A43-1932-43B2-9AED-CD0BFB533B95}",
+                        "MUNICIPALITY": "الحجرة",
+                        "SHAPE.AREA": 0.067279915546875096,
+                        "SHAPE.LEN": 1.6959584856669498,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "014703",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32849,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "005001",
+                        "AMANA": "أمانة محافظة جدة",
+                        "MUNICIPALITYCODE": "005706",
+                        "MUNICIPALITYARNAME": "الشواق",
+                        "MUNICIPALITYENAME": "Al Shawaq",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "205",
+                        "MAZARAMANACODE": "4b60cba1-89d1-4961-9085-a3fe9b875ee7",
+                        "GLOBALID": "{6D41F946-92F4-49D4-96AE-CCB0CA8C644A}",
+                        "MUNICIPALITY": "الشواق",
+                        "SHAPE.AREA": 0.131658855970781,
+                        "SHAPE.LEN": 1.8983255327600099,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "005706",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32850,
+                        "REGIONCODE": "004",
+                        "REGION": "منطقة الرياض",
+                        "AMANACODE": "004001",
+                        "AMANA": "أمانة منطقة الرياض",
+                        "MUNICIPALITYCODE": "004315",
+                        "MUNICIPALITYARNAME": "روضة سدير",
+                        "MUNICIPALITYENAME": "Raudat Sudair",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "339",
+                        "MAZARAMANACODE": "5d8a60f8-6b8d-4bcb-9fab-722293178347",
+                        "GLOBALID": "{EACA4B29-BC2B-4F48-B326-68A674F43F33}",
+                        "MUNICIPALITY": "روضة سدير",
+                        "SHAPE.AREA": 0.044766658813759699,
+                        "SHAPE.LEN": 0.93514554065997701,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "004315",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32851,
+                        "REGIONCODE": "004",
+                        "REGION": "منطقة الرياض",
+                        "AMANACODE": "004001",
+                        "AMANA": "أمانة منطقة الرياض",
+                        "MUNICIPALITYCODE": "004303",
+                        "MUNICIPALITYARNAME": "حوطة سدير",
+                        "MUNICIPALITYENAME": "Hautat Sudair",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "362",
+                        "MAZARAMANACODE": "efb8f691-613f-4089-85bf-c08375fc8adf",
+                        "GLOBALID": "{86639E55-33C0-4B4A-AA05-55ED5B1D9C9E}",
+                        "MUNICIPALITY": "حوطة سدير",
+                        "SHAPE.AREA": 0.069981826458840796,
+                        "SHAPE.LEN": 1.38131280474931,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "004303",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32852,
+                        "REGIONCODE": "009",
+                        "REGION": "منطقة جازان",
+                        "AMANACODE": "009001",
+                        "AMANA": "أمانة منطقة جازان",
+                        "MUNICIPALITYCODE": "009601",
+                        "MUNICIPALITYARNAME": "الطوال",
+                        "MUNICIPALITYENAME": "Al Tuwal",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "47",
+                        "MAZARAMANACODE": "74bb1db9-810a-4dc8-9651-02d069da2f3a",
+                        "GLOBALID": "{5CE9A655-C122-40A1-B3A8-0F3B14FF6264}",
+                        "MUNICIPALITY": "الطوال",
+                        "SHAPE.AREA": 0.0117211907689983,
+                        "SHAPE.LEN": 0.66268327917608505,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "009601",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32853,
+                        "REGIONCODE": "009",
+                        "REGION": "منطقة جازان",
+                        "AMANACODE": "009001",
+                        "AMANA": "أمانة منطقة جازان",
+                        "MUNICIPALITYCODE": "009701",
+                        "MUNICIPALITYARNAME": "الموسم",
+                        "MUNICIPALITYENAME": "Al Muwassam",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "50",
+                        "MAZARAMANACODE": "478170b5-9d91-4275-a6b0-d409ede26040",
+                        "GLOBALID": "{56F15C79-5D5E-4AD3-A34A-530CEECA619F}",
+                        "MUNICIPALITY": "الموسم",
+                        "SHAPE.AREA": 0.0173142356844335,
+                        "SHAPE.LEN": 0.59512566409513201,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "009701",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32854,
+                        "REGIONCODE": "004",
+                        "REGION": "منطقة الرياض",
+                        "AMANACODE": "004001",
+                        "AMANA": "أمانة منطقة الرياض",
+                        "MUNICIPALITYCODE": "004704",
+                        "MUNICIPALITYARNAME": "الجمش",
+                        "MUNICIPALITYENAME": "Al Jamsh",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "368",
+                        "MAZARAMANACODE": "81066072-f357-4f38-8a8d-90df956ac1f2",
+                        "GLOBALID": "{2F9BC25E-DAAF-43B6-907A-A64C7B34914F}",
+                        "MUNICIPALITY": "الجمش",
+                        "SHAPE.AREA": 0.346213052582379,
+                        "SHAPE.LEN": 3.0591243309830598,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "004704",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32855,
+                        "REGIONCODE": "006",
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "006001",
+                        "AMANA": "أمانة المنطقة الشرقية",
+                        "MUNICIPALITYCODE": "5",
+                        "MUNICIPALITYARNAME": "وسط الدمام",
+                        "MUNICIPALITYENAME": "Center Dammam",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "5",
+                        "MAZARAMANACODE": "bce978e0-c140-4ff6-b3cf-ff120867a6aa",
+                        "GLOBALID": "{FDEBD0F7-9250-4BC2-B612-DD733D5A5912}",
+                        "MUNICIPALITY": "وسط الدمام",
+                        "SHAPE.AREA": 0.0035382581430635001,
+                        "SHAPE.LEN": 0.35610878861480599,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "006001005",
+                        "ZONE": "32639",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32856,
+                        "REGIONCODE": "010",
+                        "REGION": "منطقة الجوف",
+                        "AMANACODE": "010001",
+                        "AMANA": "أمانة منطقة الجوف",
+                        "MUNICIPALITYCODE": "1",
+                        "MUNICIPALITYARNAME": "بلدية شمال سكاكا",
+                        "MUNICIPALITYENAME": "North of Skaka",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "568",
+                        "MAZARAMANACODE": "2BC8E962-67D1-41F1-BF38-E6C89F370CCD",
+                        "GLOBALID": "{F96057A9-3334-4481-9403-A970CADEB689}",
+                        "MUNICIPALITY": "بلدية شمال سكاكا",
+                        "SHAPE.AREA": 0.045202347484382302,
+                        "SHAPE.LEN": 1.12353046110961,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "010001001",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32857,
+                        "REGIONCODE": "004",
+                        "REGION": "منطقة الرياض",
+                        "AMANACODE": "004001",
+                        "AMANA": "أمانة منطقة الرياض",
+                        "MUNICIPALITYCODE": "004316",
+                        "MUNICIPALITYARNAME": "الرين",
+                        "MUNICIPALITYENAME": "Ar Rayn",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "347",
+                        "MAZARAMANACODE": "2386cb9f-4648-40f3-90f9-7b290314ea4a",
+                        "GLOBALID": "{5EEB7EDF-0745-4493-9FD7-B69F3D8BC9C0}",
+                        "MUNICIPALITY": "الرين",
+                        "SHAPE.AREA": 0.83712441890268907,
+                        "SHAPE.LEN": 4.8555803133364295,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "004316",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32858,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "005001",
+                        "AMANA": "أمانة محافظة جدة",
+                        "MUNICIPALITYCODE": "005708",
+                        "MUNICIPALITYARNAME": "غميقة",
+                        "MUNICIPALITYENAME": "Ghamiqa",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "133",
+                        "MAZARAMANACODE": "0cf89ecc-0173-42e0-9e5f-f303c468161c",
+                        "GLOBALID": "{20CD2E1E-8304-4FC2-91EC-7396C8C9B136}",
+                        "MUNICIPALITY": "غميقة",
+                        "SHAPE.AREA": 0.330076039538163,
+                        "SHAPE.LEN": 3.0015960891105498,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "005708",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32859,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "005001",
+                        "AMANA": "أمانة محافظة جدة",
+                        "MUNICIPALITYCODE": "005601",
+                        "MUNICIPALITYARNAME": "الكامل",
+                        "MUNICIPALITYENAME": "Al Kamil",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "486",
+                        "MAZARAMANACODE": "6f84e48e-bfd9-48e9-aea4-da37507e8792",
+                        "GLOBALID": "{2C040E01-73A6-4B57-9970-DB949AEE9EF0}",
+                        "MUNICIPALITY": "الكامل",
+                        "SHAPE.AREA": 0.244445268128027,
+                        "SHAPE.LEN": 2.2013127823718697,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "005601",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32860,
+                        "REGIONCODE": "009",
+                        "REGION": "منطقة جازان",
+                        "AMANACODE": "009001",
+                        "AMANA": "أمانة منطقة جازان",
+                        "MUNICIPALITYCODE": "009301",
+                        "MUNICIPALITYARNAME": "ابى عريش",
+                        "MUNICIPALITYENAME": "Abu Arish",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "43",
+                        "MAZARAMANACODE": "738763e7-7902-48d0-b867-d9db99e6e4c1",
+                        "GLOBALID": "{3D72151E-1383-457C-AD4E-A5A4EB2A11EF}",
+                        "MUNICIPALITY": "ابى عريش",
+                        "SHAPE.AREA": 0.057072576786049503,
+                        "SHAPE.LEN": 1.1032114375945699,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "009301",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32861,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "002001",
+                        "AMANA": "أمانة العاصمة المقدسة",
+                        "MUNICIPALITYCODE": "4",
+                        "MUNICIPALITYARNAME": "المعابدة",
+                        "MUNICIPALITYENAME": "Al Maabdah",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "182",
+                        "MAZARAMANACODE": "612e2951-dbd5-4ef3-ae9b-90adf328b87e",
+                        "GLOBALID": "{97F46EBF-625D-4D57-A57F-9A2DA21A8706}",
+                        "MUNICIPALITY": "المعابدة",
+                        "SHAPE.AREA": 0.00447528624856361,
+                        "SHAPE.LEN": 0.30347825785725402,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "002001004",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32862,
+                        "REGIONCODE": "015",
+                        "REGION": "منطقة نجران",
+                        "AMANACODE": "015001",
+                        "AMANA": "أمانة منطقة نجران",
+                        "MUNICIPALITYCODE": "015708",
+                        "MUNICIPALITYARNAME": "بئر عسكر",
+                        "MUNICIPALITYENAME": "Bir Askar",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "17",
+                        "MAZARAMANACODE": "172cd80a-4a92-4104-ae80-0728b3e5ece4",
+                        "GLOBALID": "{03DA50AD-17D6-445D-AFE3-9CD4791C72B9}",
+                        "MUNICIPALITY": "بئر عسكر",
+                        "SHAPE.AREA": 0.11531607898000801,
+                        "SHAPE.LEN": 1.5247268266366301,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "015708",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32830,
+                        "REGIONCODE": "006",
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "006001",
+                        "AMANA": "أمانة المنطقة الشرقية",
+                        "MUNICIPALITYCODE": "96",
+                        "MUNICIPALITYARNAME": "بلدية القطيف",
+                        "MUNICIPALITYENAME": "Al Qatif",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "96",
+                        "MAZARAMANACODE": "65c747d0-1db8-48bc-9687-9e63e603b9f2",
+                        "GLOBALID": "{60836EF5-FCD0-4738-8EE4-5D5B1A0C87E1}",
+                        "MUNICIPALITY": "بلدية القطيف",
+                        "SHAPE.AREA": 0.0063531010057050101,
+                        "SHAPE.LEN": 0.630988806071902,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "006103096",
+                        "ZONE": "32639",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32831,
+                        "REGIONCODE": "007",
+                        "REGION": "منطقة عسير",
+                        "AMANACODE": "007001",
+                        "AMANA": "أمانة منطقة عسير",
+                        "MUNICIPALITYCODE": "007716",
+                        "MUNICIPALITYARNAME": "صمخ",
+                        "MUNICIPALITYENAME": "Samakh",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "69",
+                        "MAZARAMANACODE": "9d993d35-ca73-4318-8a0c-3926e855d596",
+                        "GLOBALID": "{31DA453C-4ACA-4321-A6B3-ABA42FB7777F}",
+                        "MUNICIPALITY": "صمخ",
+                        "SHAPE.AREA": 0.25815161615172999,
+                        "SHAPE.LEN": 2.5535939150806,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "007716",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32832,
+                        "REGIONCODE": "006",
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "006001",
+                        "AMANA": "أمانة المنطقة الشرقية",
+                        "MUNICIPALITYCODE": "3",
+                        "MUNICIPALITYARNAME": "الخبر",
+                        "MUNICIPALITYENAME": "Al Khobar",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "3",
+                        "MAZARAMANACODE": "5cf7aaf7-3b7e-4193-9e0c-bf10d7ad38bd",
+                        "GLOBALID": "{D12BFAB5-2769-4A79-862C-3ABA0ECDF580}",
+                        "MUNICIPALITY": "الخبر",
+                        "SHAPE.AREA": 0.018590536755074102,
+                        "SHAPE.LEN": 1.30028778345723,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "006001003",
+                        "ZONE": "32639",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 32833,
+                        "REGIONCODE": "006",
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "006001",
+                        "AMANA": "أمانة المنطقة الشرقية",
+                        "MUNICIPALITYCODE": "98",
+                        "MUNICIPALITYARNAME": "بلدية عنك",
+                        "MUNICIPALITYENAME": "Anak",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "98",
+                        "MAZARAMANACODE": "258619a7-7169-4f44-8d76-8e03ca28cf39",
+                        "GLOBALID": "{64B4841D-C001-433B-A4CF-E945B4260AE5}",
+                        "MUNICIPALITY": "بلدية عنك",
+                        "SHAPE.AREA": 0.00191112927162259,
+                        "SHAPE.LEN": 0.244038701119969,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "006103098",
+                        "ZONE": "32639",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33044,
+                        "REGIONCODE": "008",
+                        "REGION": "منطقة القصيم",
+                        "AMANACODE": "008001",
+                        "AMANA": "أمانة منطقة القصيم",
+                        "MUNICIPALITYCODE": "008303",
+                        "MUNICIPALITYARNAME": "رياض الخبراء",
+                        "MUNICIPALITYENAME": "Riyadh Alkhabra",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "121",
+                        "MAZARAMANACODE": "1d8de53e-023a-4eba-8911-28e8afa23c84",
+                        "GLOBALID": "{A0895CA9-20D9-4661-9455-94E0DA78A85C}",
+                        "MUNICIPALITY": "رياض الخبراء",
+                        "SHAPE.AREA": 0.092081199998262905,
+                        "SHAPE.LEN": 1.9634814922525399,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "008303",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33045,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "002001",
+                        "AMANA": "أمانة العاصمة المقدسة",
+                        "MUNICIPALITYCODE": "002401",
+                        "MUNICIPALITYARNAME": "الجموم",
+                        "MUNICIPALITYENAME": "Al Jmom",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "191",
+                        "MAZARAMANACODE": "420e959e-8190-4994-8f8a-a63ff0ae7ee0",
+                        "GLOBALID": "{D9B37EA8-F6B4-445F-ACCA-1F585CA21564}",
+                        "MUNICIPALITY": "الجموم",
+                        "SHAPE.AREA": 0.14724369408985402,
+                        "SHAPE.LEN": 2.76844914932706,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "002401",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33046,
+                        "REGIONCODE": "004",
+                        "REGION": "منطقة الرياض",
+                        "AMANACODE": "004001",
+                        "AMANA": "أمانة منطقة الرياض",
+                        "MUNICIPALITYCODE": "004308",
+                        "MUNICIPALITYARNAME": "مرات",
+                        "MUNICIPALITYENAME": "Marat",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "330",
+                        "MAZARAMANACODE": "7b164382-73c0-4afb-b125-43d8985e08b0",
+                        "GLOBALID": "{816F76FA-6B9E-4B0F-AA36-00BC1529C934}",
+                        "MUNICIPALITY": "مرات",
+                        "SHAPE.AREA": 0.32476199783288501,
+                        "SHAPE.LEN": 3.0794598093957197,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "004308",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33047,
+                        "REGIONCODE": "006",
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "006001",
+                        "AMANA": "أمانة المنطقة الشرقية",
+                        "MUNICIPALITYCODE": "6",
+                        "MUNICIPALITYARNAME": "شرق الدمام",
+                        "MUNICIPALITYENAME": "East Dammam ",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "6",
+                        "MAZARAMANACODE": "bce978e0-c140-4ff6-b3cf-ff370867a6aa",
+                        "GLOBALID": "{433425E6-B75F-45B0-8EDF-9A5300CA0FD2}",
+                        "MUNICIPALITY": "شرق الدمام",
+                        "SHAPE.AREA": 0.014791671896615601,
+                        "SHAPE.LEN": 1.1195535353469299,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "006001006",
+                        "ZONE": "32639",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33048,
+                        "REGIONCODE": "004",
+                        "REGION": "منطقة الرياض",
+                        "AMANACODE": "004001",
+                        "AMANA": "أمانة منطقة الرياض",
+                        "MUNICIPALITYCODE": "004307",
+                        "MUNICIPALITYARNAME": "ضرماء",
+                        "MUNICIPALITYENAME": "Dhurma",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "335",
+                        "MAZARAMANACODE": "20083c54-caa0-4ca1-86ba-152426cd1f45",
+                        "GLOBALID": "{CFE706F2-ED20-44AA-8D14-30F560F20898}",
+                        "MUNICIPALITY": "ضرماء",
+                        "SHAPE.AREA": 0.12842350715668499,
+                        "SHAPE.LEN": 2.3322478915599199,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "004307",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33049,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "005001",
+                        "AMANA": "أمانة محافظة جدة",
+                        "MUNICIPALITYCODE": "005709",
+                        "MUNICIPALITYARNAME": "سبت الجارة",
+                        "MUNICIPALITYENAME": "Sabt Aljarra",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "132",
+                        "MAZARAMANACODE": "82335dfc-60b3-4fba-a12c-0a316a4a47cf",
+                        "GLOBALID": "{147A8F00-66AF-42FF-90BF-8A4FAAAE335D}",
+                        "MUNICIPALITY": "سبت الجارة",
+                        "SHAPE.AREA": 0.086979571355694507,
+                        "SHAPE.LEN": 1.4867438703020399,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "005709",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33050,
+                        "REGIONCODE": "003",
+                        "REGION": "منطقة المدينة المنورة",
+                        "AMANACODE": "003001",
+                        "AMANA": "أمانة منطقة المدينة المنورة",
+                        "MUNICIPALITYCODE": "003704",
+                        "MUNICIPALITYARNAME": "المسيجيد والقاحة",
+                        "MUNICIPALITYENAME": "Almsgid and Alqahh",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "460",
+                        "MAZARAMANACODE": "c2ae913c-2db6-47bf-b680-e828ea4f2607",
+                        "GLOBALID": "{DE40D070-0B60-46AD-877B-2481738DDF41}",
+                        "MUNICIPALITY": "المسيجيد والقاحة",
+                        "SHAPE.AREA": 0.25527100170630701,
+                        "SHAPE.LEN": 3.1698211828736396,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "003704",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33051,
+                        "REGIONCODE": "009",
+                        "REGION": "منطقة جازان",
+                        "AMANACODE": "009001",
+                        "AMANA": "أمانة منطقة جازان",
+                        "MUNICIPALITYCODE": "009001",
+                        "MUNICIPALITYARNAME": "أمانة منطقة جازان",
+                        "MUNICIPALITYENAME": "Jazan",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية امانة",
+                        "ORIGINALLAYERNAME": "20",
+                        "MAZARAMANACODE": "e51617fc-d614-4b32-9b23-7bf0e12bcee2",
+                        "GLOBALID": "{C9EF2B76-986D-41EC-A380-955F83B87674}",
+                        "MUNICIPALITY": "أمانة منطقة جازان",
+                        "SHAPE.AREA": 0.040717270843446798,
+                        "SHAPE.LEN": 1.2942688434138701,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "009001",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33052,
+                        "REGIONCODE": "013",
+                        "REGION": "منطقة الحدود الشمالية",
+                        "AMANACODE": "013001",
+                        "AMANA": "أمانة منطقة الحدود الشمالية",
+                        "MUNICIPALITYCODE": "013707",
+                        "MUNICIPALITYARNAME": "أم خنصر",
+                        "MUNICIPALITYENAME": "Om Khansar",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "72",
+                        "MAZARAMANACODE": "d651e506-489f-45be-b968-bb30a6b14918",
+                        "GLOBALID": "{0576FA04-92BB-4943-B953-8BA4760DD914}",
+                        "MUNICIPALITY": "أم خنصر",
+                        "SHAPE.AREA": 0.312490542556428,
+                        "SHAPE.LEN": 3.3649357642464701,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "013707",
+                        "ZONE": "32637-32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33053,
+                        "REGIONCODE": "009",
+                        "REGION": "منطقة جازان",
+                        "AMANACODE": "009001",
+                        "AMANA": "أمانة منطقة جازان",
+                        "MUNICIPALITYCODE": "009716",
+                        "MUNICIPALITYARNAME": "القفل",
+                        "MUNICIPALITYENAME": "Al Gofol",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "65",
+                        "MAZARAMANACODE": "f25b0f20-d452-477d-bfcb-1fcd3dd7be0e",
+                        "GLOBALID": "{765F411E-1700-47C9-850E-477233032A67}",
+                        "MUNICIPALITY": "القفل",
+                        "SHAPE.AREA": 0.013453971436682002,
+                        "SHAPE.LEN": 0.48576258479852602,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "009716",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33054,
+                        "REGIONCODE": "006",
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "006001",
+                        "AMANA": "أمانة المنطقة الشرقية",
+                        "MUNICIPALITYCODE": "006702",
+                        "MUNICIPALITYARNAME": "قرية العليا",
+                        "MUNICIPALITYENAME": "Al Ulya",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "481",
+                        "MAZARAMANACODE": "e2d33514-2095-45e5-90fb-c870a64f80af",
+                        "GLOBALID": "{57E544D6-CD8C-4133-9770-2382FEF4814F}",
+                        "MUNICIPALITY": "قرية العليا",
+                        "SHAPE.AREA": 0.58734180439557504,
+                        "SHAPE.LEN": 3.98550643041736,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "006702",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33055,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "005001",
+                        "AMANA": "أمانة محافظة جدة",
+                        "MUNICIPALITYCODE": "6",
+                        "MUNICIPALITYARNAME": "بلدية ذهبان",
+                        "MUNICIPALITYENAME": "Dhahban",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "427",
+                        "MAZARAMANACODE": "627c457d-0540-4837-b6fd-b511c73ecced",
+                        "GLOBALID": "{A9C07FF0-32E2-4EDF-95AA-7C97E67C8D3E}",
+                        "MUNICIPALITY": "بلدية ذهبان",
+                        "SHAPE.AREA": 0.033362400635721504,
+                        "SHAPE.LEN": 2.49110303308627,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "005001006",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33056,
+                        "REGIONCODE": "014",
+                        "REGION": "منطقة الباحة",
+                        "AMANACODE": "014001",
+                        "AMANA": "أمانة منطقة الباحة",
+                        "MUNICIPALITYCODE": "014705",
+                        "MUNICIPALITYARNAME": "بنى حسن",
+                        "MUNICIPALITYENAME": "Bani Hassan",
+                        "GOVERNMENT": "بنى حسن",
+                        "GOVERNMENTCODE": "37",
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "148",
+                        "MAZARAMANACODE": "0229e5b6-42ad-4fd6-97e4-00055812e31e",
+                        "GLOBALID": "{5540C349-E7C6-4051-B57F-08BCAC42192E}",
+                        "MUNICIPALITY": "بنى حسن",
+                        "SHAPE.AREA": 0.0097731462753212813,
+                        "SHAPE.LEN": 0.561264475022757,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "014705",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33057,
+                        "REGIONCODE": "008",
+                        "REGION": "منطقة القصيم",
+                        "AMANACODE": "008001",
+                        "AMANA": "أمانة منطقة القصيم",
+                        "MUNICIPALITYCODE": "008302",
+                        "MUNICIPALITYARNAME": "البدائع",
+                        "MUNICIPALITYENAME": "Al Badayea",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "119",
+                        "MAZARAMANACODE": "4ed583a0-9dc3-4924-802e-e38976b4272b",
+                        "GLOBALID": "{AD4147AD-D4E7-414E-9BF9-3FD5F08D9DAA}",
+                        "MUNICIPALITY": "البدائع",
+                        "SHAPE.AREA": 0.13001739100236301,
+                        "SHAPE.LEN": 1.8011936881584198,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "008302",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33058,
+                        "REGIONCODE": "003",
+                        "REGION": "منطقة المدينة المنورة",
+                        "AMANACODE": "003001",
+                        "AMANA": "أمانة منطقة المدينة المنورة",
+                        "MUNICIPALITYCODE": "003301",
+                        "MUNICIPALITYARNAME": "بدر",
+                        "MUNICIPALITYENAME": "Badr",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "463",
+                        "MAZARAMANACODE": "dea433d2-7c6e-48c8-89f4-fdad96386969",
+                        "GLOBALID": "{D54ABA02-6E9B-4585-8589-231055AAE950}",
+                        "MUNICIPALITY": "بدر",
+                        "SHAPE.AREA": 0.33438287304814002,
+                        "SHAPE.LEN": 3.2583842666345499,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "003301",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33059,
+                        "REGIONCODE": "013",
+                        "REGION": "منطقة الحدود الشمالية",
+                        "AMANACODE": "013001",
+                        "AMANA": "أمانة منطقة الحدود الشمالية",
+                        "MUNICIPALITYCODE": "013706",
+                        "MUNICIPALITYARNAME": "روضة هباس",
+                        "MUNICIPALITYENAME": "Rawdat Habbas",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "73",
+                        "MAZARAMANACODE": "f8e8a9ae-8e04-4301-b481-2c943680cff1",
+                        "GLOBALID": "{E2352754-CFA6-490D-ADA4-5DE77F963617}",
+                        "MUNICIPALITY": "روضة هباس",
+                        "SHAPE.AREA": 0.46986226331915704,
+                        "SHAPE.LEN": 2.74655298748534,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "013706",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33060,
+                        "REGIONCODE": "015",
+                        "REGION": "منطقة نجران",
+                        "AMANACODE": "015001",
+                        "AMANA": "أمانة منطقة نجران",
+                        "MUNICIPALITYCODE": "015301",
+                        "MUNICIPALITYARNAME": "شرورة",
+                        "MUNICIPALITYENAME": "Sharoura",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "12",
+                        "MAZARAMANACODE": "a4a5bcdf-2de4-4574-a466-ef9d1d26808b",
+                        "GLOBALID": "{D4F5BBD0-94C8-4B5F-831B-A002D14D9B33}",
+                        "MUNICIPALITY": "شرورة",
+                        "SHAPE.AREA": 6.38188634700363,
+                        "SHAPE.LEN": 15.600713056150399,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "015301",
+                        "ZONE": "32638-32639",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33061,
+                        "REGIONCODE": "009",
+                        "REGION": "منطقة جازان",
+                        "AMANACODE": "009001",
+                        "AMANA": "أمانة منطقة جازان",
+                        "MUNICIPALITYCODE": "009706",
+                        "MUNICIPALITYARNAME": "الدائر",
+                        "MUNICIPALITYENAME": "Addayer",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "55",
+                        "MAZARAMANACODE": "208f5701-3f65-41eb-9de3-eab5225b7ea7",
+                        "GLOBALID": "{B53E1871-F5A0-43F6-AE96-87F0FB46C94F}",
+                        "MUNICIPALITY": "الدائر",
+                        "SHAPE.AREA": 0.067763404680177206,
+                        "SHAPE.LEN": 1.65079922607277,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "009706",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33062,
+                        "REGIONCODE": "006",
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "006001",
+                        "AMANA": "أمانة المنطقة الشرقية",
+                        "MUNICIPALITYCODE": "006302",
+                        "MUNICIPALITYARNAME": "راس تنورة",
+                        "MUNICIPALITYENAME": "Ras Tanura",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "478",
+                        "MAZARAMANACODE": "b734f9cb-3021-4888-a9a4-ded95b471bee",
+                        "GLOBALID": "{17B27027-3B9C-436C-8217-23A9290373A0}",
+                        "MUNICIPALITY": "راس تنورة",
+                        "SHAPE.AREA": 0.0317202252822813,
+                        "SHAPE.LEN": 1.7169848305216799,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "006302",
+                        "ZONE": "32639",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33075,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "002001",
+                        "AMANA": "أمانة العاصمة المقدسة",
+                        "MUNICIPALITYCODE": "2",
+                        "MUNICIPALITYARNAME": "العمرة",
+                        "MUNICIPALITYENAME": "Al Umrah",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "180",
+                        "MAZARAMANACODE": "4a27ad28-e594-497e-84f1-4c853b8600bb",
+                        "GLOBALID": "{4FF8DFB8-0EB3-48BF-9811-E3810E47AA0F}",
+                        "MUNICIPALITY": "العمرة",
+                        "SHAPE.AREA": 0.025260434883015499,
+                        "SHAPE.LEN": 0.81652764439286796,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "002001002",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33076,
+                        "REGIONCODE": "004",
+                        "REGION": "منطقة الرياض",
+                        "AMANACODE": "004001",
+                        "AMANA": "أمانة منطقة الرياض",
+                        "MUNICIPALITYCODE": "12",
+                        "MUNICIPALITYARNAME": "نمار",
+                        "MUNICIPALITYENAME": "Namar",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "354",
+                        "MAZARAMANACODE": "b0e8a747-8f8c-41ef-b3d0-e1fa51be28b6",
+                        "GLOBALID": "{C893A073-C0F6-4CAE-99A1-2556DAD58E16}",
+                        "MUNICIPALITY": "نمار",
+                        "SHAPE.AREA": 0.026097399215819703,
+                        "SHAPE.LEN": 0.87407443167790411,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "004001012",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33077,
+                        "REGIONCODE": "006",
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "017001",
+                        "AMANA": "أمانة محافظة الاحساء",
+                        "MUNICIPALITYCODE": "5",
+                        "MUNICIPALITYARNAME": "بلدية المبرز",
+                        "MUNICIPALITYENAME": "Al Mubarraz",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "197",
+                        "MAZARAMANACODE": "da0d4b9a-6844-4b64-b518-d7cb72dbb470",
+                        "GLOBALID": "{8F111FE2-173F-4EF5-AA8C-6591A2ACE9D0}",
+                        "MUNICIPALITY": "بلدية المبرز",
+                        "SHAPE.AREA": 0.054818645415867999,
+                        "SHAPE.LEN": 1.08393477139677,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "017001005",
+                        "ZONE": "32639",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33063,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "016001",
+                        "AMANA": "أمانة محافظة الطائف",
+                        "MUNICIPALITYCODE": "11",
+                        "MUNICIPALITYARNAME": "مكتب الخدمات البلدية بعشيرة",
+                        "MUNICIPALITYENAME": "Ashayrah",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "306",
+                        "MAZARAMANACODE": "0f470074-ec26-42b1-bdc1-4faaf6933186",
+                        "GLOBALID": "{5106ADFD-ADAC-4ABC-8F4A-011118AD5D4F}",
+                        "MUNICIPALITY": "مكتب الخدمات البلدية بعشيرة",
+                        "SHAPE.AREA": 0.12246600818888999,
+                        "SHAPE.LEN": 1.6113691537725598,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "016001011",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33064,
+                        "REGIONCODE": "003",
+                        "REGION": "منطقة المدينة المنورة",
+                        "AMANACODE": "003001",
+                        "AMANA": "أمانة منطقة المدينة المنورة",
+                        "MUNICIPALITYCODE": "003703",
+                        "MUNICIPALITYARNAME": "النخيل",
+                        "MUNICIPALITYENAME": "Al Nkheel",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "462",
+                        "MAZARAMANACODE": "eb5d34e5-e3c6-404c-b929-334e7a8db06f",
+                        "GLOBALID": "{4DDE747C-7107-45F9-98D9-7675CC821688}",
+                        "MUNICIPALITY": "النخيل",
+                        "SHAPE.AREA": 0.26004320957069205,
+                        "SHAPE.LEN": 2.4050215680492499,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "003703",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33065,
+                        "REGIONCODE": "012",
+                        "REGION": "منطقة حائل",
+                        "AMANACODE": "012001",
+                        "AMANA": "أمانة منطقة حائل",
+                        "MUNICIPALITYCODE": "012702",
+                        "MUNICIPALITYARNAME": "الشنان",
+                        "MUNICIPALITYENAME": "Al Shanan",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "134",
+                        "MAZARAMANACODE": "3c04b65e-9baa-4019-8d08-b8551814a454",
+                        "GLOBALID": "{6327F6F7-D5B6-43BF-AA50-5CBDBCF00019}",
+                        "MUNICIPALITY": "الشنان",
+                        "SHAPE.AREA": 0.362683029674227,
+                        "SHAPE.LEN": 3.0311414569767701,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "012702",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33066,
+                        "REGIONCODE": "006",
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "017001",
+                        "AMANA": "أمانة محافظة الاحساء",
+                        "MUNICIPALITYCODE": "2",
+                        "MUNICIPALITYARNAME": "بلدية الهفوف",
+                        "MUNICIPALITYENAME": "AL Hofuf",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "198",
+                        "MAZARAMANACODE": "da0d4b9a-6844-4b64-b518-d7cbd21bb470",
+                        "GLOBALID": "{605BD5E6-012D-43A8-BFE2-7EC34827D734}",
+                        "MUNICIPALITY": "بلدية الهفوف",
+                        "SHAPE.AREA": 0.063224102471350699,
+                        "SHAPE.LEN": 1.3975387871225,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "017001002",
+                        "ZONE": "32639",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33067,
+                        "REGIONCODE": "008",
+                        "REGION": "منطقة القصيم",
+                        "AMANACODE": "008001",
+                        "AMANA": "أمانة منطقة القصيم",
+                        "MUNICIPALITYCODE": "008101",
+                        "MUNICIPALITYARNAME": "عنيزة",
+                        "MUNICIPALITYENAME": "Unaizah",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "115",
+                        "MAZARAMANACODE": "df5b1d19-935b-4c1f-bcbe-d8781daae12b",
+                        "GLOBALID": "{84D659CF-0D30-4E34-BD62-D26F0ADD7978}",
+                        "MUNICIPALITY": "عنيزة",
+                        "SHAPE.AREA": 0.17047579590755502,
+                        "SHAPE.LEN": 2.2194910747314802,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "008101",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33068,
+                        "REGIONCODE": "006",
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "018001",
+                        "AMANA": "أمانة محافظة حفر الباطن",
+                        "MUNICIPALITYCODE": "018704",
+                        "MUNICIPALITYARNAME": "السعيرة",
+                        "MUNICIPALITYENAME": "As Suairah",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "473",
+                        "MAZARAMANACODE": "c518ddb3-0590-4170-afd8-fca132395379",
+                        "GLOBALID": "{486EDE19-D9CD-439A-8EE8-14085FD71F2A}",
+                        "MUNICIPALITY": "السعيرة",
+                        "SHAPE.AREA": 0.40746807439623201,
+                        "SHAPE.LEN": 2.86704805939265,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "018704",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33069,
+                        "REGIONCODE": "014",
+                        "REGION": "منطقة الباحة",
+                        "AMANACODE": "014001",
+                        "AMANA": "أمانة منطقة الباحة",
+                        "MUNICIPALITYCODE": "014001153",
+                        "MUNICIPALITYARNAME": "بلدية الباحة الفرعية ",
+                        "MUNICIPALITYENAME": "Al Baha",
+                        "GOVERNMENT": "بلدية الباحة الفرعية ",
+                        "GOVERNMENTCODE": "37",
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "631",
+                        "MAZARAMANACODE": "781f1b38-f843-75df-aef5-af48299c5ab4",
+                        "GLOBALID": "{E3104D31-FBD5-4C7E-95D5-A9E7B3F0B7EB}",
+                        "MUNICIPALITY": "بلدية الباحة الفرعية ",
+                        "SHAPE.AREA": 0.0376927224242379,
+                        "SHAPE.LEN": 0.990306365732458,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "014001153",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33070,
+                        "REGIONCODE": "008",
+                        "REGION": "منطقة القصيم",
+                        "AMANACODE": "008001",
+                        "AMANA": "أمانة منطقة القصيم",
+                        "MUNICIPALITYCODE": "008711",
+                        "MUNICIPALITYARNAME": "الدليمية",
+                        "MUNICIPALITYENAME": "Al Dulaymiyah",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "105",
+                        "MAZARAMANACODE": "39ba3167-c007-4e3a-a676-b3976fb6ea42",
+                        "GLOBALID": "{413D6E4B-7030-4560-846E-7C913A25D1FE}",
+                        "MUNICIPALITY": "الدليمية",
+                        "SHAPE.AREA": 0.084757322861901796,
+                        "SHAPE.LEN": 2.0606499990766398,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "008711",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33071,
+                        "REGIONCODE": "004",
+                        "REGION": "منطقة الرياض",
+                        "AMANACODE": "004001",
+                        "AMANA": "أمانة منطقة الرياض",
+                        "MUNICIPALITYCODE": "004407",
+                        "MUNICIPALITYARNAME": "رماح",
+                        "MUNICIPALITYENAME": "Rumah",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "364",
+                        "MAZARAMANACODE": "072270e4-a8d6-40af-8730-d58410c2b041",
+                        "GLOBALID": "{E3CE364D-0EE7-475E-95F3-12786ED2E63E}",
+                        "MUNICIPALITY": "رماح",
+                        "SHAPE.AREA": 1.6378498118498699,
+                        "SHAPE.LEN": 7.2272682223101796,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "004407",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33072,
+                        "REGIONCODE": "006",
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "006001",
+                        "AMANA": "أمانة المنطقة الشرقية",
+                        "MUNICIPALITYCODE": "006711",
+                        "MUNICIPALITYARNAME": "عين دار",
+                        "MUNICIPALITYENAME": "Ain Dar",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "480",
+                        "MAZARAMANACODE": "15877396-8299-4064-8571-2060eb86c998",
+                        "GLOBALID": "{49C3CEC9-29D8-4164-8CFD-B2A78A2C7B35}",
+                        "MUNICIPALITY": "عين دار",
+                        "SHAPE.AREA": 0.103633801856927,
+                        "SHAPE.LEN": 1.39339574739929,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "006711",
+                        "ZONE": "32639",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33073,
+                        "REGIONCODE": "006",
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "006001",
+                        "AMANA": "أمانة المنطقة الشرقية",
+                        "MUNICIPALITYCODE": "101",
+                        "MUNICIPALITYARNAME": "بلدية تاروت",
+                        "MUNICIPALITYENAME": "Tarout",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "101",
+                        "MAZARAMANACODE": "a76a70eb-330f-41fa-a3ac-20b2c530b919",
+                        "GLOBALID": "{F8D90C8B-99A3-42BB-9275-E772109B2060}",
+                        "MUNICIPALITY": "بلدية تاروت",
+                        "SHAPE.AREA": 0.0028752834675785104,
+                        "SHAPE.LEN": 0.38570135562132501,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "006103101",
+                        "ZONE": "32639",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33074,
+                        "REGIONCODE": "011",
+                        "REGION": "منطقة تبوك",
+                        "AMANACODE": "011001",
+                        "AMANA": "أمانة منطقة تبوك",
+                        "MUNICIPALITYCODE": "011304",
+                        "MUNICIPALITYARNAME": "حقل",
+                        "MUNICIPALITYENAME": "Haql",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "176",
+                        "MAZARAMANACODE": "051279a2-ef2e-4f4d-b883-07c348ec7559",
+                        "GLOBALID": "{865B5E7F-9669-4B7F-B488-27045A110D1E}",
+                        "MUNICIPALITY": "حقل",
+                        "SHAPE.AREA": 0.47568593567759504,
+                        "SHAPE.LEN": 3.14086592306671,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "011304",
+                        "ZONE": "32636",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33011,
+                        "REGIONCODE": "006",
+                        "REGION": "المنطقة الشرقية",
+                        "AMANACODE": "018001",
+                        "AMANA": "أمانة محافظة حفر الباطن",
+                        "MUNICIPALITYCODE": "018703",
+                        "MUNICIPALITYARNAME": "الذيبية",
+                        "MUNICIPALITYENAME": "Ath Thybiyah",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "472",
+                        "MAZARAMANACODE": "b57a8c98-4f70-482e-a6e2-7584723eac50",
+                        "GLOBALID": "{C127D567-D974-472C-8720-A41746A4F19F}",
+                        "MUNICIPALITY": "الذيبية",
+                        "SHAPE.AREA": 0.87442547700626805,
+                        "SHAPE.LEN": 4.4874946043145503,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "018703",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33012,
+                        "REGIONCODE": "007",
+                        "REGION": "منطقة عسير",
+                        "AMANACODE": "007001",
+                        "AMANA": "أمانة منطقة عسير",
+                        "MUNICIPALITYCODE": "007302",
+                        "MUNICIPALITYARNAME": "تثليث",
+                        "MUNICIPALITYENAME": "Tathleeth",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "80",
+                        "MAZARAMANACODE": "8f604b71-139d-43b0-916c-8fd9859c632c",
+                        "GLOBALID": "{6F5D67B7-2A73-431A-851A-EDC962ABDD60}",
+                        "MUNICIPALITY": "تثليث",
+                        "SHAPE.AREA": 1.83590808642049,
+                        "SHAPE.LEN": 6.3918125861638897,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "007302",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33013,
+                        "REGIONCODE": "009",
+                        "REGION": "منطقة جازان",
+                        "AMANACODE": "009001",
+                        "AMANA": "أمانة منطقة جازان",
+                        "MUNICIPALITYCODE": "009302",
+                        "MUNICIPALITYARNAME": "بيش",
+                        "MUNICIPALITYENAME": "Baish",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "44",
+                        "MAZARAMANACODE": "9cdabaab-4c49-4a52-9feb-4689805e5dab",
+                        "GLOBALID": "{C8756EC6-FF4E-4984-BC3A-3777A2E5873C}",
+                        "MUNICIPALITY": "بيش",
+                        "SHAPE.AREA": 0.086133711252965997,
+                        "SHAPE.LEN": 1.7592331915232697,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "009302",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33014,
+                        "REGIONCODE": "007",
+                        "REGION": "منطقة عسير",
+                        "AMANACODE": "007001",
+                        "AMANA": "أمانة منطقة عسير",
+                        "MUNICIPALITYCODE": "007720",
+                        "MUNICIPALITYARNAME": "الامواه",
+                        "MUNICIPALITYENAME": "Al Amoah",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "141",
+                        "MAZARAMANACODE": "728b2090-d967-4eba-80cf-1be87b99d851",
+                        "GLOBALID": "{A357857E-CD37-4672-8415-07C4C63B4F6C}",
+                        "MUNICIPALITY": "الامواه",
+                        "SHAPE.AREA": 0.43226581877950804,
+                        "SHAPE.LEN": 3.2594918224398897,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "007720",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33015,
+                        "REGIONCODE": "007",
+                        "REGION": "منطقة عسير",
+                        "AMANACODE": "007001",
+                        "AMANA": "أمانة منطقة عسير",
+                        "MUNICIPALITYCODE": "007301",
+                        "MUNICIPALITYARNAME": "أحد رفيدة",
+                        "MUNICIPALITYENAME": "Ahad Rafidah",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "15",
+                        "MAZARAMANACODE": "27158861-470c-4d53-b6da-89c21ccd071f",
+                        "GLOBALID": "{05F8A32D-EEEB-48F3-A369-38CC76FA6392}",
+                        "MUNICIPALITY": "أحد رفيدة",
+                        "SHAPE.AREA": 0.045762339764394103,
+                        "SHAPE.LEN": 1.14564049430729,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "007301",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33016,
+                        "REGIONCODE": "003",
+                        "REGION": "منطقة المدينة المنورة",
+                        "AMANACODE": "003001",
+                        "AMANA": "أمانة منطقة المدينة المنورة",
+                        "MUNICIPALITYCODE": "003701",
+                        "MUNICIPALITYARNAME": "العيص",
+                        "MUNICIPALITYENAME": "Al Ais",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "459",
+                        "MAZARAMANACODE": "81daa523-baa1-4670-8e42-ac0ff91f2c36",
+                        "GLOBALID": "{D899772C-1BC3-4DC9-BD93-DF15BB7E30C8}",
+                        "MUNICIPALITY": "العيص",
+                        "SHAPE.AREA": 0.41691595672598802,
+                        "SHAPE.LEN": 3.20215256446334,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "003701",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33017,
+                        "REGIONCODE": "004",
+                        "REGION": "منطقة الرياض",
+                        "AMANACODE": "004001",
+                        "AMANA": "أمانة منطقة الرياض",
+                        "MUNICIPALITYCODE": "11",
+                        "MUNICIPALITYARNAME": "مطار الملك خالد",
+                        "MUNICIPALITYENAME": "King Khalid Airport",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية فرعية",
+                        "ORIGINALLAYERNAME": "543",
+                        "MAZARAMANACODE": null,
+                        "GLOBALID": "{6370E8B9-2C45-4487-A4AB-6FA23730ED2A}",
+                        "MUNICIPALITY": "مطار الملك خالد",
+                        "SHAPE.AREA": 0.017620327823813002,
+                        "SHAPE.LEN": 0.86333706585212699,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "004001011",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33018,
+                        "REGIONCODE": "010",
+                        "REGION": "منطقة الجوف",
+                        "AMANACODE": "010001",
+                        "AMANA": "أمانة منطقة الجوف",
+                        "MUNICIPALITYCODE": "010201",
+                        "MUNICIPALITYARNAME": "القريات",
+                        "MUNICIPALITYENAME": "Al Qurayyat",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "393",
+                        "MAZARAMANACODE": "51852abd-ad07-423d-936d-7fd70764e380",
+                        "GLOBALID": "{B0197093-0129-48FF-8828-B93B7B5DC793}",
+                        "MUNICIPALITY": "القريات",
+                        "SHAPE.AREA": 0.400526556241104,
+                        "SHAPE.LEN": 2.9517721671228099,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "010201",
+                        "ZONE": "32637",
+                        "INTERSECTION_RATIO": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 33019,
+                        "REGIONCODE": "008",
+                        "REGION": "منطقة القصيم",
+                        "AMANACODE": "008001",
+                        "AMANA": "أمانة منطقة القصيم",
+                        "MUNICIPALITYCODE": "008706",
+                        "MUNICIPALITYARNAME": "العمار",
+                        "MUNICIPALITYENAME": "Al Amar",
+                        "GOVERNMENT": null,
+                        "GOVERNMENTCODE": null,
+                        "CATEGORY": "بلدية مرتبطة",
+                        "ORIGINALLAYERNAME": "108",
+                        "MAZARAMANACODE": "1ab67c26-625c-436b-bde6-61b9b4051686",
+                        "GLOBALID": "{7B570E3F-65AD-4E06-9ABF-9304CA651B64}",
+                        "MUNICIPALITY": "العمار",
+                        "SHAPE.AREA": 0.096086224002739987,
+                        "SHAPE.LEN": 2.2885062543637598,
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1695732869000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1695732869000,
+                        "MUNICIPALITYUNIQUECODE": "008706",
+                        "ZONE": "32638",
+                        "INTERSECTION_RATIO": null
+                    }
+                },  // Add more objects as needed
+            ]
+        };
+        const regions = {
+            features: [
+                {
+                    "attributes": {
+                        "OBJECTID": 1727,
+                        "SHAPE.AREA": 7.9680205884318092,
+                        "SHAPE.LEN": 16.823729228336099,
+                        "CREATED_USER": "SDE",
+                        "CREATED_DATE": 1671615454000,
+                        "LAST_EDITED_USER": "SDE",
+                        "LAST_EDITED_DATE": 1671615454000,
+                        "GLOBALID": "{37129A15-D7BE-406D-BE82-191FD73EC9B0}",
+                        "REGIONCODE": "013",
+                        "REGIONARNAME": "منطقة الجوف",
+                        "REGIONENAME": null,
+                        "ORIGINALLAYERNAME": "010",
+                        "AREAMETR": null,
+                        "AREAKM": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 1728,
+                        "SHAPE.AREA": 6.3102412912299695,
+                        "SHAPE.LEN": 14.3240490169957,
+                        "CREATED_USER": "SDE",
+                        "CREATED_DATE": 1671615454000,
+                        "LAST_EDITED_USER": "SDE",
+                        "LAST_EDITED_DATE": 1671615454000,
+                        "GLOBALID": "{525C40BC-6A27-41B5-9D91-B16CC2B7F167}",
+                        "REGIONCODE": "004",
+                        "REGIONARNAME": "منطقة القصيم",
+                        "REGIONENAME": null,
+                        "ORIGINALLAYERNAME": "008",
+                        "AREAMETR": null,
+                        "AREAKM": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 1729,
+                        "SHAPE.AREA": 1.0868073122171698,
+                        "SHAPE.LEN": 15.6917288898408,
+                        "CREATED_USER": "SDE",
+                        "CREATED_DATE": 1671615454000,
+                        "LAST_EDITED_USER": "SDE",
+                        "LAST_EDITED_DATE": 1671615454000,
+                        "GLOBALID": "{5B41477D-B798-450D-83E8-F3EF684333C4}",
+                        "REGIONCODE": "010",
+                        "REGIONARNAME": "منطقة جازان",
+                        "REGIONENAME": null,
+                        "ORIGINALLAYERNAME": "009",
+                        "AREAMETR": null,
+                        "AREAKM": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 1730,
+                        "SHAPE.AREA": 6.9143702378314496,
+                        "SHAPE.LEN": 14.4950352535952,
+                        "CREATED_USER": "SDE",
+                        "CREATED_DATE": 1671615454000,
+                        "LAST_EDITED_USER": "SDE",
+                        "LAST_EDITED_DATE": 1671615454000,
+                        "GLOBALID": "{0F3B8E67-26A5-44BF-95BC-B08DCFE86C60}",
+                        "REGIONCODE": "006",
+                        "REGIONARNAME": "منطقة عسير",
+                        "REGIONENAME": null,
+                        "ORIGINALLAYERNAME": "007",
+                        "AREAMETR": null,
+                        "AREAKM": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 1731,
+                        "SHAPE.AREA": 13.0537518188432,
+                        "SHAPE.LEN": 23.330282341320299,
+                        "CREATED_USER": "SDE",
+                        "CREATED_DATE": 1671615454000,
+                        "LAST_EDITED_USER": "SDE",
+                        "LAST_EDITED_DATE": 1671615454000,
+                        "GLOBALID": "{C0D13629-63CF-4DAD-9D2E-95BC056D5E6B}",
+                        "REGIONCODE": "003",
+                        "REGIONARNAME": "منطقة المدينة المنورة",
+                        "REGIONENAME": null,
+                        "ORIGINALLAYERNAME": "003",
+                        "AREAMETR": null,
+                        "AREAKM": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 1732,
+                        "SHAPE.AREA": 10.506026103361,
+                        "SHAPE.LEN": 16.661319814256899,
+                        "CREATED_USER": "SDE",
+                        "CREATED_DATE": 1671615454000,
+                        "LAST_EDITED_USER": "SDE",
+                        "LAST_EDITED_DATE": 1671615454000,
+                        "GLOBALID": "{74ED0C75-404F-4CE6-91FC-C7E60985F7BC}",
+                        "REGIONCODE": "008",
+                        "REGIONARNAME": "منطقة حائل",
+                        "REGIONENAME": null,
+                        "ORIGINALLAYERNAME": "012",
+                        "AREAMETR": null,
+                        "AREAKM": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 1733,
+                        "SHAPE.AREA": 33.5501795938603,
+                        "SHAPE.LEN": 30.1679480228436,
+                        "CREATED_USER": "SDE",
+                        "CREATED_DATE": 1671615454000,
+                        "LAST_EDITED_USER": "SDE",
+                        "LAST_EDITED_DATE": 1671615454000,
+                        "GLOBALID": "{3E296F49-6F48-4F1D-A4EC-06198F97860E}",
+                        "REGIONCODE": "001",
+                        "REGIONARNAME": "منطقة الرياض",
+                        "REGIONENAME": null,
+                        "ORIGINALLAYERNAME": "004",
+                        "AREAMETR": null,
+                        "AREAKM": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 1734,
+                        "SHAPE.AREA": 10.908455531210601,
+                        "SHAPE.LEN": 19.850691665180399,
+                        "CREATED_USER": "SDE",
+                        "CREATED_DATE": 1671615454000,
+                        "LAST_EDITED_USER": "SDE",
+                        "LAST_EDITED_DATE": 1671615454000,
+                        "GLOBALID": "{E98A66A5-B9B4-4A02-8824-483EDCAF564F}",
+                        "REGIONCODE": "011",
+                        "REGIONARNAME": "منطقة نجران",
+                        "REGIONENAME": null,
+                        "ORIGINALLAYERNAME": "015",
+                        "AREAMETR": null,
+                        "AREAKM": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 1735,
+                        "SHAPE.AREA": 45.334770570668198,
+                        "SHAPE.LEN": 52.424818596493395,
+                        "CREATED_USER": "SDE",
+                        "CREATED_DATE": 1671615454000,
+                        "LAST_EDITED_USER": "SDE",
+                        "LAST_EDITED_DATE": 1671615454000,
+                        "GLOBALID": "{FE742B36-9523-474D-93CE-076EE3B51D89}",
+                        "REGIONCODE": "005",
+                        "REGIONARNAME": "المنطقة الشرقية",
+                        "REGIONENAME": null,
+                        "ORIGINALLAYERNAME": "006",
+                        "AREAMETR": null,
+                        "AREAKM": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 1736,
+                        "SHAPE.AREA": 12.208108092243299,
+                        "SHAPE.LEN": 31.603479361107901,
+                        "CREATED_USER": "SDE",
+                        "CREATED_DATE": 1671615454000,
+                        "LAST_EDITED_USER": "SDE",
+                        "LAST_EDITED_DATE": 1671615454000,
+                        "GLOBALID": "{B4622799-BA47-45ED-B748-1447732E283F}",
+                        "REGIONCODE": "007",
+                        "REGIONARNAME": "منطقة تبوك",
+                        "REGIONENAME": null,
+                        "ORIGINALLAYERNAME": "011",
+                        "AREAMETR": null,
+                        "AREAKM": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 1737,
+                        "SHAPE.AREA": 12.149303209629899,
+                        "SHAPE.LEN": 32.357294160883001,
+                        "CREATED_USER": "SDE",
+                        "CREATED_DATE": 1671615454000,
+                        "LAST_EDITED_USER": "SDE",
+                        "LAST_EDITED_DATE": 1671615454000,
+                        "GLOBALID": "{033BD019-607D-46BB-8FB5-81F9B33F54EF}",
+                        "REGIONCODE": "002",
+                        "REGIONARNAME": "منطقة مكة المكرمة",
+                        "REGIONENAME": null,
+                        "ORIGINALLAYERNAME": "002",
+                        "AREAMETR": null,
+                        "AREAKM": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 1738,
+                        "SHAPE.AREA": 0.90491688101286705,
+                        "SHAPE.LEN": 4.9831293731078103,
+                        "CREATED_USER": "SDE",
+                        "CREATED_DATE": 1671615454000,
+                        "LAST_EDITED_USER": "SDE",
+                        "LAST_EDITED_DATE": 1671615454000,
+                        "GLOBALID": "{D7001CC0-D320-4B19-9326-E15ECDF1C22F}",
+                        "REGIONCODE": "012",
+                        "REGIONARNAME": "منطقة الباحة",
+                        "REGIONENAME": null,
+                        "ORIGINALLAYERNAME": "014",
+                        "AREAMETR": null,
+                        "AREAKM": null
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 1739,
+                        "SHAPE.AREA": 10.3906589610691,
+                        "SHAPE.LEN": 23.359015769105699,
+                        "CREATED_USER": "SDE",
+                        "CREATED_DATE": 1671615454000,
+                        "LAST_EDITED_USER": "SDE",
+                        "LAST_EDITED_DATE": 1671615454000,
+                        "GLOBALID": "{873727D2-EE82-49D9-8EFC-EBA26036F84A}",
+                        "REGIONCODE": "009",
+                        "REGIONARNAME": "منطقة الحدود الشمالية",
+                        "REGIONENAME": null,
+                        "ORIGINALLAYERNAME": "013",
+                        "AREAMETR": null,
+                        "AREAKM": null
+                    }
+                }
+            ]
+
+        };
+        const streets = {
+            features: [
+                {
+                    "attributes": {
+                        "OBJECTID": 4523248,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "002001",
+                        "AMANA": "منطقة مكة المكرمة",
+                        "MUNICIPALITYCODE": "002001",
+                        "MUNICIPALITY": "أمانة العاصمة المقدسة",
+                        "SUBMUNICIPALITYCODE": "16",
+                        "SUBMUNICIPALITY": "الشعيبة",
+                        "DISTRICTCODE": null,
+                        "DISTRICT": null,
+                        "STREETCODE": "870542",
+                        "STREETNAME": "الرياض 160",
+                        "STREETTYPE": null,
+                        "STREETSTATUS": null,
+                        "STREETWITDTH": "10",
+                        "STREETSPECAILID": null,
+                        "ASPHALTSTATUS": null,
+                        "STREETSUBTYBE": 6,
+                        "AMANASTREETCODE": null,
+                        "GLOBALID": "{3479C94A-0E91-4F06-AAE2-4ADF917B40EC}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1662647335000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1662647335000,
+                        "AIMSSTREETWITDTH": null,
+                        "MUNICIPALITYBACKUP": null,
+                        "STREETNO_IT": null,
+                        "MUNICIPALITYUNIQUECODE": null,
+                        "SHAPE.LEN": 0.0049845370827740799
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 4523249,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "002001",
+                        "AMANA": "منطقة مكة المكرمة",
+                        "MUNICIPALITYCODE": "002001",
+                        "MUNICIPALITY": "أمانة العاصمة المقدسة",
+                        "SUBMUNICIPALITYCODE": "16",
+                        "SUBMUNICIPALITY": "الشعيبة",
+                        "DISTRICTCODE": null,
+                        "DISTRICT": null,
+                        "STREETCODE": "870543",
+                        "STREETNAME": "الرياض 533",
+                        "STREETTYPE": null,
+                        "STREETSTATUS": null,
+                        "STREETWITDTH": "7",
+                        "STREETSPECAILID": null,
+                        "ASPHALTSTATUS": null,
+                        "STREETSUBTYBE": 6,
+                        "AMANASTREETCODE": null,
+                        "GLOBALID": "{14CE986A-F6EE-42F9-8324-DE24106590BE}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1662647335000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1662647335000,
+                        "AIMSSTREETWITDTH": null,
+                        "MUNICIPALITYBACKUP": null,
+                        "STREETNO_IT": null,
+                        "MUNICIPALITYUNIQUECODE": null,
+                        "SHAPE.LEN": 0.0014483416222788202
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 4523250,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "002001",
+                        "AMANA": "منطقة مكة المكرمة",
+                        "MUNICIPALITYCODE": "002001",
+                        "MUNICIPALITY": "أمانة العاصمة المقدسة",
+                        "SUBMUNICIPALITYCODE": "16",
+                        "SUBMUNICIPALITY": "الشعيبة",
+                        "DISTRICTCODE": null,
+                        "DISTRICT": null,
+                        "STREETCODE": "870544",
+                        "STREETNAME": "الرياض 675",
+                        "STREETTYPE": null,
+                        "STREETSTATUS": null,
+                        "STREETWITDTH": "15",
+                        "STREETSPECAILID": null,
+                        "ASPHALTSTATUS": null,
+                        "STREETSUBTYBE": 6,
+                        "AMANASTREETCODE": null,
+                        "GLOBALID": "{CCDB9154-2049-4065-B1E9-98FDFC72D5A9}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1662647335000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1662647335000,
+                        "AIMSSTREETWITDTH": null,
+                        "MUNICIPALITYBACKUP": null,
+                        "STREETNO_IT": null,
+                        "MUNICIPALITYUNIQUECODE": null,
+                        "SHAPE.LEN": 0.00084052358433407898
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 4523251,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "002001",
+                        "AMANA": "منطقة مكة المكرمة",
+                        "MUNICIPALITYCODE": "002001",
+                        "MUNICIPALITY": "أمانة العاصمة المقدسة",
+                        "SUBMUNICIPALITYCODE": "16",
+                        "SUBMUNICIPALITY": "الشعيبة",
+                        "DISTRICTCODE": null,
+                        "DISTRICT": null,
+                        "STREETCODE": "870545",
+                        "STREETNAME": "الرياض 637",
+                        "STREETTYPE": null,
+                        "STREETSTATUS": null,
+                        "STREETWITDTH": "6",
+                        "STREETSPECAILID": null,
+                        "ASPHALTSTATUS": null,
+                        "STREETSUBTYBE": 6,
+                        "AMANASTREETCODE": null,
+                        "GLOBALID": "{0426EE05-88E1-4F0D-AECE-29181AF3D8B6}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1662647335000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1662647335000,
+                        "AIMSSTREETWITDTH": null,
+                        "MUNICIPALITYBACKUP": null,
+                        "STREETNO_IT": null,
+                        "MUNICIPALITYUNIQUECODE": null,
+                        "SHAPE.LEN": 0.00140992875236846
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 4523252,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "002001",
+                        "AMANA": "منطقة مكة المكرمة",
+                        "MUNICIPALITYCODE": "002001",
+                        "MUNICIPALITY": "أمانة العاصمة المقدسة",
+                        "SUBMUNICIPALITYCODE": "16",
+                        "SUBMUNICIPALITY": "الشعيبة",
+                        "DISTRICTCODE": null,
+                        "DISTRICT": null,
+                        "STREETCODE": "870546",
+                        "STREETNAME": "الرياض 681",
+                        "STREETTYPE": null,
+                        "STREETSTATUS": null,
+                        "STREETWITDTH": "8",
+                        "STREETSPECAILID": null,
+                        "ASPHALTSTATUS": null,
+                        "STREETSUBTYBE": 6,
+                        "AMANASTREETCODE": null,
+                        "GLOBALID": "{F50F84B9-1FA9-4703-B822-31713BB48B33}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1662647335000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1662647335000,
+                        "AIMSSTREETWITDTH": null,
+                        "MUNICIPALITYBACKUP": null,
+                        "STREETNO_IT": null,
+                        "MUNICIPALITYUNIQUECODE": null,
+                        "SHAPE.LEN": 0.0013540136747146401
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 4523253,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "002001",
+                        "AMANA": "منطقة مكة المكرمة",
+                        "MUNICIPALITYCODE": "002001",
+                        "MUNICIPALITY": "أمانة العاصمة المقدسة",
+                        "SUBMUNICIPALITYCODE": "16",
+                        "SUBMUNICIPALITY": "الشعيبة",
+                        "DISTRICTCODE": null,
+                        "DISTRICT": null,
+                        "STREETCODE": "870547",
+                        "STREETNAME": "الرياض 711",
+                        "STREETTYPE": null,
+                        "STREETSTATUS": null,
+                        "STREETWITDTH": "5",
+                        "STREETSPECAILID": null,
+                        "ASPHALTSTATUS": null,
+                        "STREETSUBTYBE": 6,
+                        "AMANASTREETCODE": null,
+                        "GLOBALID": "{7F2FC93D-5D45-4E8B-A011-23DF3A5C149D}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1662647335000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1662647335000,
+                        "AIMSSTREETWITDTH": null,
+                        "MUNICIPALITYBACKUP": null,
+                        "STREETNO_IT": null,
+                        "MUNICIPALITYUNIQUECODE": null,
+                        "SHAPE.LEN": 0.0054485253275534003
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 4523254,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "002001",
+                        "AMANA": "منطقة مكة المكرمة",
+                        "MUNICIPALITYCODE": "002001",
+                        "MUNICIPALITY": "أمانة العاصمة المقدسة",
+                        "SUBMUNICIPALITYCODE": "16",
+                        "SUBMUNICIPALITY": "الشعيبة",
+                        "DISTRICTCODE": null,
+                        "DISTRICT": null,
+                        "STREETCODE": "836826",
+                        "STREETNAME": "الرياض 353",
+                        "STREETTYPE": null,
+                        "STREETSTATUS": null,
+                        "STREETWITDTH": "10",
+                        "STREETSPECAILID": null,
+                        "ASPHALTSTATUS": null,
+                        "STREETSUBTYBE": 4,
+                        "AMANASTREETCODE": null,
+                        "GLOBALID": "{C2204F02-BB62-41D1-AB95-79725E7E07D9}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1662647335000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1662647335000,
+                        "AIMSSTREETWITDTH": null,
+                        "MUNICIPALITYBACKUP": null,
+                        "STREETNO_IT": null,
+                        "MUNICIPALITYUNIQUECODE": null,
+                        "SHAPE.LEN": 0.043779184740644003
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 4523255,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "002001",
+                        "AMANA": "منطقة مكة المكرمة",
+                        "MUNICIPALITYCODE": "002001",
+                        "MUNICIPALITY": "أمانة العاصمة المقدسة",
+                        "SUBMUNICIPALITYCODE": "16",
+                        "SUBMUNICIPALITY": "الشعيبة",
+                        "DISTRICTCODE": null,
+                        "DISTRICT": null,
+                        "STREETCODE": "836827",
+                        "STREETNAME": "الرياض 489",
+                        "STREETTYPE": null,
+                        "STREETSTATUS": null,
+                        "STREETWITDTH": "15",
+                        "STREETSPECAILID": null,
+                        "ASPHALTSTATUS": null,
+                        "STREETSUBTYBE": 5,
+                        "AMANASTREETCODE": null,
+                        "GLOBALID": "{C7665C71-20DB-473D-80B2-72065506B857}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1662647335000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1662647335000,
+                        "AIMSSTREETWITDTH": null,
+                        "MUNICIPALITYBACKUP": null,
+                        "STREETNO_IT": null,
+                        "MUNICIPALITYUNIQUECODE": null,
+                        "SHAPE.LEN": 0.014741048534486
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 4523256,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "002001",
+                        "AMANA": "منطقة مكة المكرمة",
+                        "MUNICIPALITYCODE": "002001",
+                        "MUNICIPALITY": "أمانة العاصمة المقدسة",
+                        "SUBMUNICIPALITYCODE": "16",
+                        "SUBMUNICIPALITY": "الشعيبة",
+                        "DISTRICTCODE": null,
+                        "DISTRICT": null,
+                        "STREETCODE": "870548",
+                        "STREETNAME": "بئر بن لادن الفله 166",
+                        "STREETTYPE": null,
+                        "STREETSTATUS": null,
+                        "STREETWITDTH": "18",
+                        "STREETSPECAILID": null,
+                        "ASPHALTSTATUS": null,
+                        "STREETSUBTYBE": 6,
+                        "AMANASTREETCODE": null,
+                        "GLOBALID": "{F16B8E46-A41A-4EC1-978F-F017B2B5F279}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1662647335000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1662647335000,
+                        "AIMSSTREETWITDTH": null,
+                        "MUNICIPALITYBACKUP": null,
+                        "STREETNO_IT": null,
+                        "MUNICIPALITYUNIQUECODE": null,
+                        "SHAPE.LEN": 0.0060843355549663703
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 4523257,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "002001",
+                        "AMANA": "منطقة مكة المكرمة",
+                        "MUNICIPALITYCODE": "002001",
+                        "MUNICIPALITY": "أمانة العاصمة المقدسة",
+                        "SUBMUNICIPALITYCODE": "16",
+                        "SUBMUNICIPALITY": "الشعيبة",
+                        "DISTRICTCODE": null,
+                        "DISTRICT": null,
+                        "STREETCODE": "870549",
+                        "STREETNAME": "بئر بن لادن الفله 101",
+                        "STREETTYPE": null,
+                        "STREETSTATUS": null,
+                        "STREETWITDTH": "8",
+                        "STREETSPECAILID": null,
+                        "ASPHALTSTATUS": null,
+                        "STREETSUBTYBE": 6,
+                        "AMANASTREETCODE": null,
+                        "GLOBALID": "{6338B935-7825-41CE-8BEA-71BCCA8F40AD}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1662647335000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1662647335000,
+                        "AIMSSTREETWITDTH": null,
+                        "MUNICIPALITYBACKUP": null,
+                        "STREETNO_IT": null,
+                        "MUNICIPALITYUNIQUECODE": null,
+                        "SHAPE.LEN": 0.0100036278834511
+                    }
+                },
+                {
+                    "attributes": {
+                        "OBJECTID": 4523258,
+                        "REGIONCODE": "002",
+                        "REGION": "منطقة مكة المكرمة",
+                        "AMANACODE": "002001",
+                        "AMANA": "منطقة مكة المكرمة",
+                        "MUNICIPALITYCODE": "002001",
+                        "MUNICIPALITY": "أمانة العاصمة المقدسة",
+                        "SUBMUNICIPALITYCODE": "16",
+                        "SUBMUNICIPALITY": "الشعيبة",
+                        "DISTRICTCODE": null,
+                        "DISTRICT": null,
+                        "STREETCODE": "870550",
+                        "STREETNAME": "بئر بن لادن الفله 75",
+                        "STREETTYPE": null,
+                        "STREETSTATUS": null,
+                        "STREETWITDTH": "11",
+                        "STREETSPECAILID": null,
+                        "ASPHALTSTATUS": null,
+                        "STREETSUBTYBE": 6,
+                        "AMANASTREETCODE": null,
+                        "GLOBALID": "{69AFCCB9-3DB7-4EE3-93AC-0D33DECEAB7B}",
+                        "CREATED_USER": "AASHEHATA",
+                        "CREATED_DATE": 1662647335000,
+                        "LAST_EDITED_USER": "AASHEHATA",
+                        "LAST_EDITED_DATE": 1662647335000,
+                        "AIMSSTREETWITDTH": null,
+                        "MUNICIPALITYBACKUP": null,
+                        "STREETNO_IT": null,
+                        "MUNICIPALITYUNIQUECODE": null,
+                        "SHAPE.LEN": 0.0010385991058499901
+                    }
+                },
+            ]
+        };
+     
+
+        // Populate Amana Dropdown
+        const amanaList = amanas.features.map(m => {
+            return {
+                "AMANACODE": m.attributes["AMANACODE"],
+                "AMANAARNAME": m.attributes["AMANAARNAME"]
+            };
+        });
+
+
+
+        // Populate Municipality Dropdown
+        const municipalityList = municipalities.features.map(m => {
+            return {
+                "MUNICIPALITYCODE": m.attributes["MUNICIPALITYCODE"],
+                "MUNICIPALITYARNAME": m.attributes["MUNICIPALITYARNAME"]
+            };
+        });
+
+        const municipalityDropdown = document.getElementById('municipalityDropdown');
+
+        municipalityList.forEach(municipality => {
+            const option = document.createElement('option');
+            option.value = municipality.MUNICIPALITYCODE;
+            option.textContent = municipality.MUNICIPALITYARNAME;
+            municipalityDropdown.appendChild(option);
+        });
+        // Populate Municipality Dropdown
+
+        const regionList = regions.features.map(r => {
+            return {
+                "REGIONCODE": r.attributes["REGIONCODE"],
+                "REGIONARNAME": r.attributes["REGIONARNAME"]
+            };
+        });
+
+        const regionDropdown = document.getElementById('regionDropdown');
+
+        regionList.forEach(region => {
+            const option = document.createElement('option');
+            option.value = region.REGIONCODE;
+            option.textContent = region.REGIONARNAME;
+            regionDropdown.appendChild(option);
+        });
+        // Populate Municipality Dropdown
+        const streetList = streets.features.map(s => {
+            return {
+                "STREETCODE": s.attributes["STREETCODE"],
+                "STREETARNAME": s.attributes["STREETNAME"]
+            };
+        });
+
+        const streetDropdown = document.getElementById('streetDropdown');
+
+        streetList.forEach(street => {
+            const option = document.createElement('option');
+            option.value = street.STREETCODE;
+            option.textContent = street.STREETARNAME;
+            streetDropdown.appendChild(option);
+        });
+
+        const amanaDropdown = document.getElementById('amanaDropdown');
+        amanas.features.forEach(amana => {
+            const option = document.createElement('option');
+            option.value = amana.attributes.AMANACODE;
+            option.textContent = amana.attributes.AMANAARNAME;
+            amanaDropdown.appendChild(option);
+        });
+        // Function to filter and populate the Municipality Dropdown based on selected Amana
+        function populateMunicipalities() {
+            const selectedAmanaCode = parseInt(amanaDropdown.value);
+            const municipalityDropdown = document.getElementById('municipalityDropdown');
+            municipalityDropdown.innerHTML = '';
+
+            municipalities.features.filter(m => m.attributes.AMANACODE === selectedAmanaCode)
+                .forEach(municipality => {
+                    const option = document.createElement('option');
+                    option.value = municipality.attributes.MUNICIPALITYCODE;
+                    option.textContent = municipality.attributes.MUNICIPALITYARNAME;
+                    municipalityDropdown.appendChild(option);
+                });
+            // Trigger population of Regions based on the first municipality
+            populateRegions();
+        }
+        // Function to filter and populate the Region Dropdown based on selected Municipality
+        function populateRegions() {
+            const selectedMunicipalityCode = parseInt(document.getElementById('municipalityDropdown').value);
+            const regionDropdown = document.getElementById('regionDropdown');
+            regionDropdown.innerHTML = '';
+
+            regions.features.filter(r => r.attributes.MUNICIPALITYCODE === selectedMunicipalityCode)
+                .forEach(region => {
+                    const option = document.createElement('option');
+                    option.value = region.attributes.REGIONCODE;
+                    option.textContent = region.attributes.REGIONARNAME;
+                    option.dataset.center = region.attributes.CENTER;
+                    regionDropdown.appendChild(option);
+                });
+            // Trigger population of Streets based on the first region
+             // Trigger population of Streets based on the first region
+             populateStreetsAndMoveMap();
+        }
+
+        // Function to filter and populate the Street Dropdown based on selected Region
+        function populateStreetsAndMoveMap() {
+            const selectedRegionCode = parseInt(document.getElementById('regionDropdown').value);
+            const streetDropdown = document.getElementById('streetDropdown');
+            streetDropdown.innerHTML = '';
+
+            streets.features.filter(s => s.attributes.REGIONCODE === selectedRegionCode)
+                .forEach(street => {
+                    const option = document.createElement('option');
+                    option.value = street.attributes.STREETCODE;
+                    option.textContent = street.attributes.STREETARNAME;
+                    streetDropdown.appendChild(option);
+                });
+            // Move the map to the selected region's center
+            const regionDropdown = document.getElementById('regionDropdown');
+            const selectedRegionOption = regionDropdown.options[regionDropdown.selectedIndex];
+            const centerCoordinates = selectedRegionOption.dataset.center.split(',').map(Number);
+            view.goTo({
+                center: centerCoordinates,
+                zoom: 12
+            });
+        }
+        // Initial population of dropdowns based on the first Amana in the list
+        populateMunicipalities();
+
+
+
+
+
+    </script>
+
+    <script>
+        require([
+            "esri/Map",
+            "esri/views/MapView",
+            "esri/layers/VectorTileLayer",
+            "esri/Basemap"
+        ], function (Map, MapView, VectorTileLayer, Basemap) {
+
+            // Define your custom basemap layer
+            const mapBaseLayer = new VectorTileLayer({
+                url: "https://webgis.momra.gov.sa/server/rest/services/Bundaries/Cities/MapServer/0"
+            });
+
+            const customBasemap = new Basemap({
+                baseLayers: [mapBaseLayer],
+                title: "Custom Basemap",
+                id: "custom-basemap"
+            });
+
+            const map1 = new Map({
+                basemap: customBasemap
+            });
+
+            const map2 = new Map({
+                basemap: "satellite"
+            });
+
+            const view = new MapView({
+                container: "viewDiv",
+                map: map1,
+                center: [45.0, 24.0], // Longitude, latitude
+                zoom: 6
+            });
+
+            document.getElementById("switchButton").addEventListener("click", function () {
+                view.map = view.map === map1 ? map2 : map1;
+            });
+        });
+    </script>
+</body>
+
+</html>
